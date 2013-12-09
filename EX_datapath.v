@@ -9,7 +9,7 @@ module EX_datapath (
   input         shift, 
   input         sh_dir, 
   input  [2:0]  sh_func, 
-  input  [31:0] srcA, 
+  input  [31:0] srcA,
   input  [31:0] srcB, 
   input         PSR_Wen, 
   

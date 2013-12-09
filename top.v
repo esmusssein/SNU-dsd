@@ -5,8 +5,8 @@ module top ();
   wire [15:0] imem_addr;
   wire [15:0] imem_data;
   wire [15:0] dmem_addr;
-  wire [15:0] dmem_data_write;
-  wire [15:0] dmem_data_read;
+  wire [31:0] dmem_data_write;
+  wire [31:0] dmem_data_read;
   wire dmem_wr;
   
   dsd_processor u_dsd_processor (

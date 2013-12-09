@@ -17,18 +17,18 @@ module RF (
   parameter W = 32;
 
   // Input and outputs
-  input         clk,
-  input         resetn,
-  input  [2:0]  addr_srcA,
-  input  [2:0]  addr_srcB,
-  input  [2:0]  addr_dest,
-  input  [W-1:0] data_in,
-  input         RF_Wen,
-  input         WR,
+  input          clk;
+  input          resetn;
+  input  [2:0]   addr_srcA;
+  input  [2:0]   addr_srcB;
+  input  [2:0]   addr_dest;
+  input  [W-1:0] data_in;
+  input          RF_Wen;
+  input          WR;
 
-  output [W-1:0] dest,
-  output [W-1:0] srcA,
-  output [W-1:0] srcB
+  output [W-1:0] dest;
+  output [W-1:0] srcA;
+  output [W-1:0] srcB;
 
   // Inner reg
   reg [W-1:0] register [7:0];

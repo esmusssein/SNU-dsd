@@ -34,14 +34,14 @@ module cla_4bits(
   // Generate sum.
   always @(*)
     begin
-      sum[0] = a[0] ^ b[0] ^ cin;
-      sum[1] = a[1] ^ b[1] ^ cout[0];
-      sum[2] = a[2] ^ b[2] ^ cout[1];
-      sum[3] = a[3] ^ b[3] ^ cout[2];
+      sum[0] = p[0] ^ cin;
+      sum[1] = p[1] ^ cout[0];
+      sum[2] = p[2] ^ cout[1];
+      sum[3] = p[3] ^ cout[2];
     end
 
   // Generate group generate and propagate.
-  always (*)
+  always @(*)
     begin
       groupP = &p;
       groupG = g[3] | (p[3]&g[2]) | (p[3]&p[2]&g[1]) | (p[3]&p[2]&p[1]&g[0]);

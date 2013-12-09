@@ -1,11 +1,11 @@
 module dsd_processor (
   input         clk, 
   input         resetn, 
-  input  [15:0] dmem_data_in, 
+  input  [31:0] dmem_data_in, 
   input  [15:0] imem_data, 
   
   output [15:0] dmem_addr, 
-  output [15:0] dmem_data_out,
+  output [31:0] dmem_data_out,
   output        dmem_wr, 
   output [15:0] imem_addr 
 );
@@ -25,11 +25,11 @@ module dsd_processor (
   wire [2:0]  addr_dest;
   wire [2:0]  addr_dest_in_ex;
   wire [2:0]  addr_dest_in_mem;
-  wire [15:0] srcA;
-  wire [15:0] srcB;
-  wire [15:0] dest;
-  wire [15:0] EX_data;
-  wire [15:0] MEM_data;
+  wire [31:0] srcA;
+  wire [31:0] srcB;
+  wire [31:0] dest;
+  wire [31:0] EX_data;
+  wire [31:0] MEM_data;
   wire [15:0] PC_immed16;
   wire        br;
   wire        link;
@@ -42,7 +42,7 @@ module dsd_processor (
   wire        RF_Wen;
   wire        WR_in;
   wire        WR_out;
-  wire [15:0] RF_in;
+  wire [31:0] RF_in;
   wire        in_mem_stage;
   
   IR u_IR (
@@ -92,7 +92,7 @@ module dsd_processor (
     .WR            (WR_out          )
   );
   
-  RF u_RF (
+  RF #(32) u_RF (
     .clk           (clk             ),
     .resetn        (resetn          ),
     .addr_srcA     (addr_srcA       ),
@@ -123,7 +123,7 @@ module dsd_processor (
     .clk           (clk             ),
     .resetn        (resetn          ),
     .EXtoMEM_Wen   (EXtoMEM_Wen     ),
-    .mem_addr_in   (EX_data         ),
+    .mem_addr_in   (EX_data[15:0]   ),
     .rdest_addr_in (addr_dest_in_ex ),
     .rdest_data_in (dest            ),
     .store_in      (store           ),

@@ -12,22 +12,22 @@ module EX_top (
   input  [2:0]  Rs1, 
   input  [2:0]  Rs2, 
   input  [2:0]  Rs3, 
-  input  [15:0] srcA, 
-  input  [15:0] srcB, 
+  input  [31:0] srcA, 
+  input  [31:0] srcB, 
   
   output [2:0]  addr_srcA, 
   output [2:0]  addr_srcB, 
   output [2:0]  addr_dest, 
   output [15:0] PC_immed16, 
   output        br, 
-  output [15:0] data_out, 
+  output [31:0] data_out, 
   output        link, 
   output        mem_inst,
   output        store, 
   output        WR
 );
 
-  wire [15:0] ALU_immed32;
+  wire [31:0] ALU_immed32;
   wire [6:0]  alu_sel;
   wire        immed_sel;
   wire        pc_offset_sel;

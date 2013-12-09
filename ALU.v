@@ -24,15 +24,15 @@ module ALU(
   // Inner wires
   wire [31:0] cla_sum;
   wire [31:0] cla_cout;
-  wire [4:0]  cla_fout;
+  wire [3:0]  cla_fout;
 
 
   // Decide cla input a_in using 2-1 MUX.
   always @(*)
     begin
-      if (carry_in == 1'b1)
+      if (cla_cin == 1'b1)
         begin
-          cla_a = a ^ 16'b1111_1111_1111_1111;
+          cla_a = a ^ 32'b1111_1111_1111_1111_1111_1111_1111_1111;
         end
       else
         begin
@@ -93,7 +93,7 @@ module ALU(
 
         MOV:
           begin
-            data_out = b;   // TODO b???
+            data_out = a;
           end
 
         default:
@@ -105,7 +105,7 @@ module ALU(
 
   flag_decoder #(32) fdecoder(
     .sin(cla_sum),
-    .cin(cla_cout)
+    .cin(cla_cout),
 
     .fout(cla_fout)
   );
@@ -173,7 +173,7 @@ endmodule
 
 module flag_decoder(
   sin,
-  cin
+  cin,
 
   fout
 );
@@ -191,7 +191,7 @@ module flag_decoder(
   // z_flag(fout[3]), n_flag(fout[2]), c_flag(fout[1]), v_flag(fout[0])
   always @(*)
     begin
-      fout[3] = ~|sin;
+      fout[3] = ~(|sin);
       fout[2] = sin[W-1];
       fout[1] = cin[W-1];
       fout[0] = cin[W-2] ^ cin[W-1];

@@ -13,11 +13,11 @@ module shifter(
   localparam ARI_SHIFT = 3'b010;
   localparam ROT_SHIFT = 3'b001;
 
-  reg [15:0] stage1;    // shifted by 16
-  reg [15:0] stage2;    // shifted by 8
-  reg [15:0] stage3;    // shifted by 4
-  reg [15:0] stage4;    // shifted by 2
-  reg [15:0] stage5;    // shifted by 1
+  reg [31:0] stage1;    // shifted by 16
+  reg [31:0] stage2;    // shifted by 8
+  reg [31:0] stage3;    // shifted by 4
+  reg [31:0] stage4;    // shifted by 2
+  reg [31:0] stage5;    // shifted by 1
   reg [4:0]  last_out;
 
   /*shifted by 16*/
@@ -32,24 +32,24 @@ module shifter(
               case(func)
                 LOG_SHIFT :
                   begin
-                    stage1 = 16'd0;
+                    stage1 = {{16{1'b0}}, data_in[31:16]};
                   end
 
                 ARI_SHIFT :
                   begin
-                    if(data_in[15] == 1'b1) 
+                    if(data_in[31] == 1'b1) 
                       begin
-                        stage1 = 16'hFFFF;
+                        stage1 = {{16{1'b1}}, data_in[31:16]};
                       end 
                     else 
                       begin
-                        stage1 = 16'h0000;
+                        stage1 = {{16{1'b0}}, data_in[31:16]};
                       end
                   end
 
                 ROT_SHIFT :
                   begin
-                    stage1 = data_in;
+                    stage1 = {data_in[15:0], data_in[31:16]};
                   end
 
                 default :
@@ -60,22 +60,22 @@ module shifter(
             end 
           else 
             begin
-              last_out[0] = data_in[0];
+              last_out[0] = data_in[16];
 
               case(func)
                 LOG_SHIFT :
                   begin
-                    stage1 = 16'd0;
+                    stage1 = {data_in[15:0], {16{1'b0}}};
                   end
 
                 ARI_SHIFT :
                   begin
-                    stage1 = 16'd0;
+                    stage1 = {data_in[15:0], {16{1'b0}}};
                   end
 
                 ROT_SHIFT :
                   begin
-                    stage1 = data_in;
+                    stage1 = {data_in[15:0], data_in[31:16]};
                   end
 
                 default :
@@ -100,34 +100,34 @@ module shifter(
           if (dir == 1'b1)
             begin
               last_out[1] = stage1[7];
-              stage2[7:0] = stage1[15:8];
+              stage2[23:0] = stage1[31:8];
 
               case (func)
                 LOG_SHIFT:
                   begin
-                    stage2[15:8] = {8{1'b0}};
+                    stage2[31:24] = {8{1'b0}};
                   end
 
                 ARI_SHIFT:
                   begin
-                    stage2[15:8] = {8{stage1[15]}};
+                    stage2[31:24] = {8{stage1[31]}};
                   end
 
                 ROT_SHIFT:
                   begin
-                    stage2[15:8] = stage1[7:0];
+                    stage2[31:24] = stage1[7:0];
                   end
 
                 default
                   begin
-                    stage2[15:8] = {8{1'b0}};
+                    stage2[31:24] = {8{1'b0}};
                   end
               endcase
             end
           else
             begin
-              last_out[1] = stage1[8];
-              stage2[15:8] = stage1[7:0];
+              last_out[1] = stage1[24];
+              stage2[31:8] = stage1[23:0];
 
               case (func)
                 LOG_SHIFT:
@@ -142,7 +142,7 @@ module shifter(
 
                 ROT_SHIFT:
                   begin
-                    stage2[7:0] = stage1[15:8];
+                    stage2[7:0] = stage1[31:24];
                   end
 
                 default
@@ -167,61 +167,61 @@ module shifter(
           if(dir == 1'b1) 
             begin
               last_out[2]  = stage2[3];
-              stage3[11:0] = stage2[15:4];
+              stage3[27:0] = stage2[31:4];
 
               case(func)
                 LOG_SHIFT :
                   begin
-                    stage3[15:12] = 0;
+                    stage3[31:28] = 0;
                   end
 
                 ARI_SHIFT :
                   begin
                     if(stage2[15] == 1'b1) 
                       begin
-                        stage3[15:12] = 4'hf;
+                        stage3[31:28] = 4'hf;
                       end 
                     else 
                       begin
-                        stage3[15:12] = 4'h0;
+                        stage3[31:28] = 4'h0;
                       end
                   end
 
                 ROT_SHIFT :
                   begin
-                    stage3[15:12] = stage2[3:0];
+                    stage3[31:28] = stage2[3:0];
                   end
 
                 default :
                   begin
-                    stage3[15:12] = 0;
+                    stage3[31:28] = 0;
                   end
               endcase
             end 
           else 
             begin
-              last_out[2]  = stage2[12];
-              stage3[15:4] = stage2[11:0];
+              last_out[2]  = stage2[28];
+              stage3[31:4] = stage2[27:0];
 
               case(func)
                 LOG_SHIFT :
                   begin
-                    stage3[3:0] = 0;
+                    stage3[3:0] = 4'd0;
                   end
 
                 ARI_SHIFT :
                   begin
-                    stage3[3:0] = 0;
+                    stage3[3:0] = 4'd0;
                   end
 
                 ROT_SHIFT :
                   begin
-                    stage3[3:0] = stage2[15:12];
+                    stage3[3:0] = stage2[31:28];
                   end
 
                 default :
                   begin 
-                    stage3[3:0] = 0;
+                    stage3[3:0] = 4'd0;
                   end
               endcase
             end
@@ -241,54 +241,54 @@ module shifter(
           if(dir == 1'b1) 
             begin
               last_out[3]  = stage3[1];
-              stage4[13:0] = stage3[15:2];
+              stage4[29:0] = stage3[31:2];
 
               case(func)
                 LOG_SHIFT :
                   begin
-                    stage4[15:14] = 0;
+                    stage4[31:30] = 0;
                   end
 
                 ARI_SHIFT :
                   begin
-                    stage4[15:14] = {2{stage3[15]}};
+                    stage4[31:30] = {2{stage3[31]}};
                   end
 
                 ROT_SHIFT :
                   begin
-                    stage4[15:14] = stage3[1:0];
+                    stage4[31:30] = stage3[1:0];
                   end
 
                 default :
                   begin
-                    stage4[15:14] = {2{1'b0}};
+                    stage4[31:30] = {2{1'b0}};
                   end
               endcase
             end 
           else 
             begin
-              last_out[3]  = stage3[14];
-              stage4[15:2] = stage3[13:0];
+              last_out[3]  = stage3[30];
+              stage4[31:2] = stage3[29:0];
 
               case(func)
                 LOG_SHIFT :
                   begin
-                    stage4[1:0] = 0;
+                    stage4[1:0] = 2'd0;
                   end
 
                 ARI_SHIFT :
                   begin
-                    stage4[1:0] = 0;
+                    stage4[1:0] = 2'd0;
                   end
 
                 ROT_SHIFT :
                   begin
-                    stage4[1:0] = stage3[15:14];
+                    stage4[1:0] = stage3[31:30];
                   end
 
                 default :
                   begin 
-                    stage4[1:0] = 0;
+                    stage4[1:0] = 2'd0;
                   end
               endcase
             end
@@ -308,54 +308,54 @@ module shifter(
           if(dir == 1'b1) 
             begin
               last_out[4]  = stage4[0];
-              stage5[14:0] = stage4[15:1];
+              stage5[30:0] = stage4[31:1];
 
               case(func)
                 LOG_SHIFT :
                   begin
-                    stage5[15] = 0;
+                    stage5[31] = 1'd0;
                   end
 
                 ARI_SHIFT :
                   begin
-                    stage5[15] = stage4[15];
+                    stage5[31] = stage4[31];
                   end
 
                 ROT_SHIFT :
                   begin
-                    stage5[15] = stage3[1:0];
+                    stage5[31] = stage3[0];
                   end
 
                 default :
                   begin
-                    stage5[15] = 1'b0;
+                    stage5[31] = 1'b0;
                   end
               endcase
             end 
           else
             begin
-              last_out[4]  = stage4[15];
-              stage5[15:1] = stage4[14:0];
+              last_out[4]  = stage4[31];
+              stage5[31:1] = stage4[30:0];
 
               case(func)
                 LOG_SHIFT :
                   begin
-                    stage5[0] = 0;
+                    stage5[0] = 1'b0;
                   end
 
                 ARI_SHIFT :
                   begin
-                    stage5[0] = 0;
+                    stage5[0] = 1'b0;
                   end
 
                 ROT_SHIFT :
                   begin
-                    stage5[0] = stage4[15];
+                    stage5[0] = stage4[31];
                   end
 
                 default :
                   begin 
-                    stage5[0] = 0;
+                    stage5[0] = 1'b0;
                   end
               endcase
             end

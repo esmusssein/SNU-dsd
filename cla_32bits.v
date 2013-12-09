@@ -1,4 +1,5 @@
 /* TEST */
+/* TODO - delete display */
 module cla_32bits (
   input [31:0] a,
   input [31:0] b,
@@ -9,9 +10,9 @@ module cla_32bits (
 );
 
   // Inner regs
-  reg [7:0] groupG;
-  reg [7:0] groupP;
-  reg [7:0] groupC;
+  wire [7:0] groupG;
+  wire [7:0] groupP;
+  wire [7:0] groupC;
 
 
   // Generate carries.
@@ -25,7 +26,7 @@ module cla_32bits (
 
   // Generate sum.
   genvar i;
-  generate for (i = 0; i < 8; i++)
+  generate for (i = 0; i < 8; i=i+1)
     begin
       if (i == 0)
         begin
@@ -55,5 +56,5 @@ module cla_32bits (
         end
     end
   endgenerate
-
+  
 endmodule

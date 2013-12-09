@@ -21,10 +21,10 @@ module carry_lookahead_unit(
 
   // Generate cout.
   genvar i;
-  generate for(i = 0; i < W; i++)
+  generate for(i = 0; i < W; i=i+1)
     if (i == 0)
       begin
-        carry(
+        carry ca(
           .cin(cin),
           .g(g[i]),
           .p(p[i]),
@@ -33,7 +33,7 @@ module carry_lookahead_unit(
       end
     else
       begin
-        carry(
+        carry ca(
           .cin(cout[i-1]),
           .g(g[i]),
           .p(p[i]),
@@ -55,7 +55,7 @@ module carry(
 );
 
   // Generate carry from carry generate and propagate.
-  always(*)
+  always @(*)
     begin
       cout = g | (p & cin);
     end

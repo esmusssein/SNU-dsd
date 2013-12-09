@@ -18,7 +18,7 @@ module control_mux (
     output reg [2:0]  addr_srcA,
     output reg [2:0]  addr_srcB,
     output reg [2:0]  addr_dest,
-    output reg [15:0] ALU_immed32,
+    output reg [31:0] ALU_immed32,
     output reg [15:0] PC_offset16
 );
 

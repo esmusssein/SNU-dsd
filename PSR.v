@@ -49,6 +49,7 @@ module PSR (
                 end
             else
                 begin
+                    //$display("PSR, alu_sel(%h), alu_flag_in(%b)",  alu_sel, alu_flag_in);
                     case(alu_sel)
                         ADD :
                             begin

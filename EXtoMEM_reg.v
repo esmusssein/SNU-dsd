@@ -4,32 +4,32 @@ module EXtoMEM_reg (
   input         EXtoMEM_Wen,
   input  [15:0] mem_addr_in,
   input  [2:0]  rdest_addr_in,
-  input  [15:0] rdest_data_in,
+  input  [31:0] rdest_data_in,
   input         store_in,
   
   output [15:0] mem_addr_out,
   output [2:0]  rdest_addr_out,
-  output [15:0] rdest_data_out,
+  output [31:0] rdest_data_out,
   output        store_out
 );
 
   reg  [15:0] mem_addr;
   reg  [2:0]  rdest_addr;
-  reg  [15:0] rdest_data;
+  reg  [31:0] rdest_data;
   reg         store;
   
   wire [15:0] next_mem_addr;
   wire [2:0]  next_rdest_addr;
-  wire [15:0] next_rdest_data;
+  wire [31:0] next_rdest_data;
   wire        next_store;
   
   always@(posedge clk, negedge resetn)
     begin
       if(resetn == 1'b0) 
         begin
-          mem_addr   <= 16'h0000;
+          mem_addr   <= 32'h0000;
           rdest_addr <= 3'h0;
-          rdest_data <= 16'h0000;
+          rdest_data <= 32'h0000;
           store      <= 0;
         end 
       else 
