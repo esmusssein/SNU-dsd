@@ -47,7 +47,7 @@
       end
   end
 
-  // Calculate nextLR.
+  /* compute next lr */
   always @(*)
     begin
       if (PC_Wen == 1'b1)
