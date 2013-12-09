@@ -147,7 +147,7 @@ module dsd_processor (
   );
   
   assign in_mem_stage  = (mem_inst == 1'b1 && EXtoMEM_Wen == 1'b0)? 1'b1 : 1'b0;
-  assign WR_in         = (in_mem_stage)? ~dmem_wr : WR_out;
+  assign WR_in         = (in_mem_stage)? ~dmem_wr : WR_out;  // ~dmem_wr => load-instruction
   assign RF_in         = (in_mem_stage)? dmem_data_in : EX_data;
   assign addr_dest     = (in_mem_stage)? addr_dest_in_mem : addr_dest_in_ex;
   assign dmem_data_out = MEM_data;

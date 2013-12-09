@@ -17,7 +17,7 @@ module EX_datapath (
   output [3:0]  PSR_flags
 );
 
-  // Inner wire
+  /* inner wire */
   wire [31:0] selected_a;
   wire [3:0]  alu_flag;
   wire [3:0]  sh_flag;
@@ -25,7 +25,7 @@ module EX_datapath (
   wire [31:0] sh_data;
   wire [4:0]  shamt;
   
-  /* Be aware of it selects a, not b. */
+  /* be aware of it selects a, not b */
   assign selected_a = (immed_sel == 1'b1)? immed32 : srcA;
   assign shamt      = (immed_sel == 1'b1)? immed5  : srcA[4:0];
   
