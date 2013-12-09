@@ -1,10 +1,11 @@
-  module IR (
+module IR (
   input         clk,
   input         resetn,
   input  [15:0] inst_in,
   input         Wen,
 
   output [4:0]  immed5,
+  output [6:0]  immed7,
   output [7:0]  immed8,
   output [10:0] immed11,
   output [15:0] inst_out,
@@ -34,6 +35,7 @@
   end
 
   assign immed5   = inst_reg[10:6];
+  assign immed7   = inst_reg[6:0];
   assign immed8   = inst_reg[7:0];
   assign immed11  = inst_reg[10:0];
   assign Rs0      = inst_reg[2:0];
