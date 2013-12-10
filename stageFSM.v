@@ -2,6 +2,7 @@ module stageFSM (
   input      clk,
   input      resetn,
   input      mem_inst,
+  input      mem_force,
 
   output reg EXtoMEM_Wen,
   output reg IR_Wen,
@@ -51,7 +52,7 @@ module stageFSM (
 
         MEM:
           begin
-            next_stage = IF;
+            next_stage = (mem_force == 1'b1) ? MEM : IF;
           end
 
         default:
@@ -81,7 +82,7 @@ module stageFSM (
                 IR_Wen      = 1'b0;
                 PC_Wen      = 1'b0;
                 PSR_Wen     = 1'b0;
-                RF_Wen      = 1'b1;  //?
+                RF_Wen      = 1'b0;  //?
               end
             else
               begin
