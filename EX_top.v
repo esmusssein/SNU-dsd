@@ -10,11 +10,11 @@ module EX_top (
   input  [2:0]  Rd1, 
   input  [2:0]  Rs0, 
   input  [2:0]  Rs1, 
-  input  [2:0]  Rs2, 
-  input  [2:0]  Rs3, 
-  input  [31:0] srcA, 
-  input  [31:0] srcB, 
-  
+  input  [2:0]  Rs2,
+  input  [2:0]  Rs3,
+  input  [31:0] srcA,
+  input  [31:0] srcB,
+
   output [2:0]  addr_srcA, 
   output [2:0]  addr_srcB, 
   output [2:0]  addr_dest, 

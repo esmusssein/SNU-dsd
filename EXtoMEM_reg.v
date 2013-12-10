@@ -27,7 +27,7 @@ module EXtoMEM_reg (
     begin
       if(resetn == 1'b0) 
         begin
-          mem_addr   <= 15'h0000;
+          mem_addr   <= 16'h0000;
           rdest_addr <= 3'h0;
           rdest_data <= 32'h0000;
           store      <= 1'b0;

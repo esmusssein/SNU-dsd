@@ -4,282 +4,73 @@
  * modify stack pointer.
  */
 module ST_top(
-  input        clk,
-  input        resetn,
-  input [2:0]  Rd0,
-  input [2:0]  Rd1,
-  input [8:0]  Rl,
-  input [6:0]  immed7,
-  input [7:0]  immed8,
+  input        clk,              // done
+  input        resetn,           // done
+  input [6:0]  immed7,           // done
+  input [7:0]  immed8,           // done
   input [15:0] LR,
-  input [15:0] inst_in,
+  input [8:0]  RL,               // done
+  input [2:0]  Rd0,              // done
+  input [2:0]  Rd1,              // done
 
-  output reg [15:0] dmem_addr_out,
-  output reg [2:0]  rdest_addr_out,
-  output reg [31:0] rdest_data_out,
-  output reg [15:0] PC_out,
-  output reg        RF_WR,
-  output reg        PC_WR,
-  output reg        store,
-  output reg        mem_inst,
-  output reg        mem_force
+  output wire [15:0] dmem_addr,  // done
+  output wire [2:0]  rdest_addr, // done
+  output wire [31:0] dout,       // done
+  output wire        store,      // done
+  output wire        mem_inst,   // done
+  output wire        mem_force,  // done
+  output wire        dmem_wr,    // done
+  output wire        PC_wr,      // done
+  output wire        RF_wr,      // done
+  output wire        st_inst     // done
 );
 
-  /* default stack pointer */
-  // TODO - find accurate value of it
-  `define DEFAULT_SP 15'b0000_0000_0000_000;
-
-  /* instruction headers */
-  `define INST_PUSH  7'b1011_010
-  `define INST_POP   7'b1011_110
-  `define INST_ADDSP 9'b1011_00000
-  `define INST_SUBSP 9'b1011_00001
-  `define INST_MOVSP 13'b0100_0110_01101
-  `define INST_ADDS  5'b10101
-  `define INST_LDRSP 5'b10011
-  `define INST_STRSP 5'b10010
-
-  /* op codes */
-  localparam NOP   = 8'b0000_0000;
-  localparam PUSH  = 8'b0000_0001;
-  localparam POP   = 8'b0000_0010;
-  localparam ADDSP = 8'b0000_0100;
-  localparam SUBSP = 8'b0000_1000;
-  localparam MOVSP = 8'b0001_0000;
-  localparam ADDS  = 8'b0010_0000;
-  localparam LDRSP = 8'b0100_0000;
-  localparam STRSP = 8'b1000_0000;
-  
-
   /* operation indicator via hot encoding */
-  reg [7:0] op_sel;
-
+  wire [7:0]  op_sel;
   /* stack pointer */
-  reg [15:0] sp_cur;
-  reg [15:0] sp_nxt;
+  wire [15:0] SP;
+  /* data_out from datapath */
+  wire [31:0] dout_dp;
 
+  /* decode instruction */
+  ST_inst_decoder u_inst_decoder(
+    .inst_in(inst_in),    // done
+
+    .op_sel(op_sel),      // done
+    .mem_inst(mem_inst),  // done
+    .store(store),        // done
+    .st_inst(st_inst)     // done
+  );
   
-  /* update or reset sp */
-  always @(posedge clk or negedge resetn)
-    begin
-      if (resetn == 1'b1)
-        begin
-          sp_cur <= DEFAULT_SP;
-        end
-      else
-        begin
-          sp_cur <= sp_nxt;
-        end
-    end
+  /* datapath */
+  ST_datapath u_datapath(
+    .data_in(SP),       // done
+    .op_sel(op_sel),    // done
+    .immed7(immed7),    // done
+    .immed8(immed8),    // done
 
-  /* compute output and control signals */
-  always @(posedge clk or negedge resetn)
-    begin
-      begin
-      case (op_sel)
-        NOP:
-          begin
-            dmem_addr_out = 16'd0;
-            rdest_addr_out = 3'd0;
-            rdest_data_out = 32'd0;
-            PC_out = 16'd0;
-            RF_WR = 1'b0;
-            PC_WR = 1'b0;
-            store = 1'b0;
-            mem_inst = 1'b0;
-            mem_force = 1'b1;
-          end
+    .data_out(dout_dp)  // done
+  );
 
-        PUSH:
-          begin
-            // TODO
-          end
-        POP:
-          begin
-            // TODO
-          end
-        ADDSP:
-          begin
-            dmem_addr_out = 16'd0;
-            rdest_addr_out = 3'd0;
-            rdest_data_out = 32'd0;
-            PC_out = 16'd0;
-            RF_WR = 1'b0;
-            PC_WR = 1'b0;
-            store = 1'b0;
-          end
-        SUBSP:
-          begin
-            dmem_addr_out = 16'd0;
-            rdest_addr_out = 3'd0;
-            rdest_data_out = 32'd0;
-            PC_out = 16'd0;
-            RF_WR = 1'b0;
-            PC_WR = 1'b0;
-            store = 1'b0;
-          end
-        MOVSP:
-          begin
-            dmem_addr_out = 16'd0;    
-            rdest_addr_out = Rd0;      /**/
-            rdest_data_out = sp_cur;   /**/
-            PC_out = 16'd0;
-            RF_WR = 1'b1;              /**/
-            PC_WR = 1'b0;
-            store = 1'b0;
-          end
-        ADDS:
-          begin
-            dmem_addr_out = 16'd0;
-            rdest_addr_out = Rd1;      /**/
-            rdest_data_out = sp_cur + {immed8[5:0], 2'b0};    /**/
-            PC_out = 16'd0;
-            RF_WR = 1'b0;
-            PC_WR = 1'b0;
-            store = 1'b0;
-          end
-        LDRSP:
-          begin
-            dmem_addr_out = sp_cur + sp_cur + {immed8[5:0], 2'b0};  /**/
-            rdest_addr_out = Rd1;
-            rdest_data_out = 32'd0;
-            PC_out = 16'd0;
-            RF_WR = 1'b1;    /**/
-            PC_WR = 1'b0;
-            store = 1'b0;
-          end
-        STRSP:
-          begin
-            dmem_addr_out = sp_cur + sp_cur + {immed8[5:0], 2'b0};  /**/
-            rdest_addr_out = Rd1;
-            rdest_data_out = 32'd0;
-            PC_out = 16'd0;
-            RF_WR = 1'b0;
-            PC_WR = 1'b0;
-            store = 1'b1;    /**/
-          end
-        default:
-          begin
-            dmem_addr_out = 16'd0;
-            rdest_addr_out = 3'd0;
-            rdest_data_out = 32'd0;
-            PC_out = 16'd0;
-            RF_WR = 1'b0;
-            PC_WR = 1'b0;
-            store = 1'b0;
-          end
-      endcase
-    end
+  /* controller */
+  ST_controller u_controller(
+    .clk(clk),           // done
+    .resetn(resetn),     // done
+    .data_in(dout_dp),   // done
+    .op_sel(op_sel),     // done
+    .RL(RL),             // done
+    .Rd0(Rd0),           // done
+    .Rd1(Rd1),           // done
 
-  /* compute next sp */
-  always @(*)
-    begin
-      case (op_sel)
-        NOP:
-          begin
-            sp_nxt = sp_cur;
-          end
+    .rdest_addr(rdest_addr), // done
+    .dmem_addr(dmem_addr),   // done
+    .mem_force(mem_force),   // done
+    .dmem_wr(dmem_wr),       // done
+    .PC_wr(PC_wr),
+    .RF_wr(RF_wr),
+    .SP_out(SP)              // done
+  );
 
-        PUSH:
-          begin
-            sp_nxt = sp_cur - 4;
-          end
-        POP:
-          begin
-            sp_nxt = sp_cur + 4;
-          end
-        ADDSP:
-          begin
-            sp_nxt = sp_cur + {immed7[4:0], 2'b00};  /* sp + 4 * immed7 */
-          end
-        SUBSP:
-          begin
-            sp_nxt = sp_cur - {immed7[4:0], 2'b00};  /* sp - 4 * immed7 */
-          end
-        MOVSP:
-          begin
-            sp_nxt = sp_cur;
-          end
-        ADDS:
-          begin
-            sp_nxt = sp_cur;
-          end
-        LDRSP:
-          begin
-            sp_nxt = sp_cur;
-          end
-        STRSP:
-          begin
-            sp_nxt = sp_cur;
-          end
-        default:
-          begin
-            sp_nxt = sp_cur;
-          end
-      endcase
-    end
-
-  /* decode stack-related instruction */
-  always @(*)
-    begin
-      case (inst_in[15:11])
-        INST_ADDS:
-          begin
-            op_sel = ADDS;
-          end
-
-        INST_LDRSP:
-          begin
-            op_sel = LDRSP;
-          end
-
-        INST_STRSP:
-          begin
-            op_sel = STRSP;
-          end
-
-        default:
-          begin
-            case (inst_in[15:9])
-              INST_PUSH:
-                begin
-                  op_sel = PUSH;
-                end
-
-              INST_POP:
-                begin
-                 op_sel = POP;
-                end
-
-              default:
-                begin
-                  case (inst_in[15:7])
-                    INST_ADDSP:
-                      begin
-                        op_sel = ADDSP;
-                      end
-
-                    INST_SUBSP:
-                      begin
-                        op_sel = SUBSP;
-                      end
-
-                    default:
-                      begin
-                        if (inst_in[15:3] == INST_MOVSP)
-                          begin
-                            op_sel = MOVSP;
-                          end
-                        else
-                          begin
-                            op_sel = NOP;
-                          end
-                      end
-                  endcase
-                end
-            endcase
-          end
-      endcase
-    end
+  assign dout = dout_dp;
 
 endmodule
