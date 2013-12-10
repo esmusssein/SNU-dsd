@@ -12,6 +12,7 @@ module dsd_processor (
 
   wire [15:0] inst;
   wire [4:0]  immed5;
+  wire [6:0]  immed7;
   wire [7:0]  immed8;
   wire [10:0] immed11;
   wire [2:0]  Rd0;
@@ -20,6 +21,7 @@ module dsd_processor (
   wire [2:0]  Rs1;
   wire [2:0]  Rs2;
   wire [2:0]  Rs3;
+  wire [8:0]  RL;
   wire [2:0]  addr_srcA;
   wire [2:0]  addr_srcB;
   wire [2:0]  addr_dest;
@@ -44,6 +46,19 @@ module dsd_processor (
   wire        WR_out;
   wire [31:0] RF_in;
   wire        in_mem_stage;
+  wire [15:0] LR;
+
+  /* wires for stack */
+  wire [15:0] dmem_addr_st;
+  wire [2:0]  rdest_addr_st;
+  wire [31:0] dout_st;
+  wire        store_st;
+  wire        mem_inst_st;
+  wire        mem_force_st;
+  wire        dmem_wr_st;
+  wire        PC_wr_st;
+  wire        RF_wr_st,
+  wire        st_inst;
   
   IR u_IR (
     .clk           (clk             ),
@@ -52,6 +67,7 @@ module dsd_processor (
     .Wen           (IR_Wen          ),
 
     .immed5        (immed5          ),
+    .immed7        (immed7          ),
     .immed8        (immed8          ),
     .immed11       (immed11         ),
     .inst_out      (inst            ),
@@ -60,7 +76,8 @@ module dsd_processor (
     .Rs0           (Rs0             ),
     .Rs1           (Rs1             ),
     .Rs2           (Rs2             ),
-    .Rs3           (Rs3             )
+    .Rs3           (Rs3             ),
+    .RL            (RL              )
   );
   
   EX_top u_EX_top (
@@ -115,7 +132,7 @@ module dsd_processor (
     .offset        (PC_immed16      ),
     .PC_Wen        (PC_Wen          ),
 
-    .LR            (                ),
+    .LR            (LR              ),
     .PC            (imem_addr       )
   );
   
@@ -132,6 +149,28 @@ module dsd_processor (
     .rdest_addr_out(addr_dest_in_mem),
     .rdest_data_out(MEM_data        ),
     .store_out     (dmem_wr         )
+  );
+
+  ST_top u_ST_top(
+    .clk(clk),
+    .resetn(resetn),
+    .immed7(immed7),
+    .immed8(immed8),
+    .LR(LR),
+    .RL(RL),
+    .Rd0(Rd0),
+    .Rd1(Rd1),
+
+    .dmem_addr(dmem_addr_st),
+    .rdest_addr(rdest_addr_st),
+    .dout(dout_st),
+    .store(store_st),
+    .mem_inst(mem_inst_st),
+    .mem_force(mem_force_st),
+    .dmem_wr(dmem_wr_st),
+    .PC_wr(PC_wr_st),
+    .RF_wr(RF_wr_st),
+    .st_inst(st_inst)
   );
   
   stageFSM u_stageFSM (

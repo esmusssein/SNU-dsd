@@ -15,7 +15,7 @@ module IR (
   output [2:0]  Rs1,
   output [2:0]  Rs2,
   output [2:0]  Rs3,
-  output [8:0]  Rl
+  output [8:0]  RL
 );
 
   reg [15:0] inst_reg;
@@ -39,7 +39,7 @@ module IR (
   assign immed7   = inst_reg[6:0];
   assign immed8   = inst_reg[7:0];
   assign immed11  = inst_reg[10:0];
-  assign Rl       = inst_reg[8:0];
+  assign RL       = inst_reg[8:0];
   assign Rs0      = inst_reg[2:0];
   assign Rs1      = inst_reg[5:3];
   assign Rs2      = inst_reg[8:6];
