@@ -4,25 +4,25 @@
  * modify stack pointer.
  */
 module ST_top(
-  input        clk,              // done
-  input        resetn,           // done
-  input [6:0]  immed7,           // done
-  input [7:0]  immed8,           // done
+  input        clk,
+  input        resetn,         
+  input [6:0]  immed7,         
+  input [7:0]  immed8,         
   input [15:0] LR,
-  input [8:0]  RL,               // done
-  input [2:0]  Rd0,              // done
-  input [2:0]  Rd1,              // done
+  input [8:0]  RL,             
+  input [2:0]  Rd0,            
+  input [2:0]  Rd1,            
 
-  output wire [15:0] dmem_addr,  // done
-  output wire [2:0]  rdest_addr, // done
-  output wire [31:0] dout,       // done
-  output wire        store,      // done
-  output wire        mem_inst,   // done
-  output wire        mem_force,  // done
-  output wire        dmem_wr,    // done
-  output wire        PC_wr,      // done
-  output wire        RF_wr,      // done
-  output wire        st_inst     // done
+  output wire [15:0] dmem_addr,
+  output wire [2:0]  rdest_addr
+  output wire [31:0] dout,     
+  output wire        store,    
+  output wire        mem_inst, 
+  output wire        mem_force,
+  output wire        dmem_wr,  
+  output wire        PC_wr,    
+  output wire        RF_wr,    
+  output wire        st_inst   
 );
 
   /* operation indicator via hot encoding */
@@ -34,41 +34,41 @@ module ST_top(
 
   /* decode instruction */
   ST_inst_decoder u_inst_decoder(
-    .inst_in(inst_in),    // done
+    .inst_in(inst_in),  
 
-    .op_sel(op_sel),      // done
-    .mem_inst(mem_inst),  // done
-    .store(store),        // done
-    .st_inst(st_inst)     // done
+    .op_sel(op_sel),    
+    .mem_inst(mem_inst),
+    .store(store),      
+    .st_inst(st_inst)
   );
   
   /* datapath */
   ST_datapath u_datapath(
-    .data_in(SP),       // done
-    .op_sel(op_sel),    // done
-    .immed7(immed7),    // done
-    .immed8(immed8),    // done
+    .data_in(SP),     
+    .op_sel(op_sel),  
+    .immed7(immed7),  
+    .immed8(immed8),  
 
-    .data_out(dout_dp)  // done
+    .data_out(dout_dp)
   );
 
   /* controller */
   ST_controller u_controller(
-    .clk(clk),           // done
-    .resetn(resetn),     // done
-    .data_in(dout_dp),   // done
-    .op_sel(op_sel),     // done
-    .RL(RL),             // done
-    .Rd0(Rd0),           // done
-    .Rd1(Rd1),           // done
+    .clk(clk),
+    .resetn(resetn),   
+    .data_in(dout_dp), 
+    .op_sel(op_sel),   
+    .RL(RL),           
+    .Rd0(Rd0),         
+    .Rd1(Rd1),         
 
-    .rdest_addr(rdest_addr), // done
-    .dmem_addr(dmem_addr),   // done
-    .mem_force(mem_force),   // done
-    .dmem_wr(dmem_wr),       // done
+    .rdest_addr(rdest_addr)
+    .dmem_addr(dmem_addr), 
+    .mem_force(mem_force), 
+    .dmem_wr(dmem_wr),     
     .PC_wr(PC_wr),
     .RF_wr(RF_wr),
-    .SP_out(SP)              // done
+    .SP_out(SP)            
   );
 
   assign dout = dout_dp;

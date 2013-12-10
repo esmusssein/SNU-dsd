@@ -129,8 +129,10 @@ module dsd_processor (
     .resetn        (resetn          ),
     .br            (br              ),
     .link          (link            ),
+    .data_in       (dmem_data_in    ),
     .offset        (PC_immed16      ),
     .PC_Wen        (PC_Wen          ),
+    .PC_wr         (PC_wr_st        ),
 
     .LR            (LR              ),
     .PC            (imem_addr       )
@@ -177,6 +179,7 @@ module dsd_processor (
     .clk           (clk             ),
     .resetn        (resetn          ),
     .mem_inst      (mem_inst        ),
+    .mem_force     (mem_force_st    ),
     
     .EXtoMEM_Wen   (EXtoMEM_Wen     ),
     .IR_Wen        (IR_Wen          ),
