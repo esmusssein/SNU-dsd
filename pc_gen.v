@@ -3,8 +3,10 @@
   input             resetn,
   input             br,
   input             link,
+  input      [15:0] data_in,
   input      [15:0] offset,
   input             PC_Wen,
+  input             PC_wr,
 
   output reg [15:0] LR,
   output reg [15:0] PC
@@ -35,6 +37,10 @@
         if (br == 1'b1)
           begin
             nextPC = PC + (offset << 1) + 4;            
+          end
+        else if (PC_wr == 1'b1)
+          begin
+            nextPC = data_in;
           end
         else
           begin
