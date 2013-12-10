@@ -10,15 +10,15 @@ module top ();
   wire dmem_wr;
   
   dsd_processor u_dsd_processor (
-    .clk           (clk                     ), 
-    .resetn        (resetn                  ), 
-    .dmem_data_in  (dmem_data_read          ),
-    .imem_data     (imem_data               ), 
+    .clk            (clk                     ), 
+    .resetn         (resetn                  ), 
+    .dmem_data_in   (dmem_data_read          ),
+    .imem_data      (imem_data               ), 
     
-    .dmem_addr     (dmem_addr               ),
-    .dmem_data_out (dmem_data_write         ),
-    .dmem_wr       (dmem_wr                 ), 
-    .imem_addr     (imem_addr               ) 
+    .dmem_addr_exst (dmem_addr               ),
+    .dmem_data_out  (dmem_data_write         ),
+    .dmem_wr_exst   (dmem_wr                 ), 
+    .imem_addr      (imem_addr               ) 
   );
   
   imem u_imem (

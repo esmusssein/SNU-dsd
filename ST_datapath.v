@@ -23,15 +23,15 @@ module ST_datapath(
     begin
       if (op_sel == ADDSP)
         begin
-          data_out = data_in + {immed7[4:0], 2'b00};
+          data_out = data_in + {{25{1'b0}}, immed7[4:0], 2'b00};
         end
       else if (op_sel == SUBSP)
         begin
-          data_out = data_in - {immed7[4:0], 2'b00};
+          data_out = data_in - {{25{1'b0}}, immed7[4:0], 2'b00};
         end
       else if (op_sel == ADDS || op_sel == LDRSP || op_sel == STRSP)
         begin
-          data_out = data_in + {immed8[5:0], 2'b00};
+          data_out = data_in + {{24{1'b0}}, immed8[5:0], 2'b00};
         end
       else if (op_sel == POP)
         begin

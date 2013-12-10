@@ -1,7 +1,8 @@
 module ST_controller(
   input        clk,
   input        resetn,
-  input        op_sel,
+  input        ST_Wen,
+  input [7:0]  op_sel,
   input [15:0] LR,
   input [8:0]  RL,
   input [2:0]  Rd0,
@@ -20,7 +21,7 @@ module ST_controller(
 
   /* default stack pointer */
   // TODO - find accurate value of it
-  `define DEFAULT_SP 15'b0000_0000_0000_000;
+  localparam DEFAULT_SP = 16'b1111_1111_1111_1111;
 
   /* op codes */
   parameter NOP   = 8'b0000_0000;
@@ -203,7 +204,7 @@ module ST_controller(
         LDRSP:
           begin
             rdest_addr = Rd1;  /**/
-            dmem_addr = data_in[15:0];  /**/
+            dmem_addr = {data_in[13:0], 2'b00};  /**/
             LR_sel = 1'b0;
             mem_force = 1'b0;
             dmem_wr = 1'b0;
@@ -214,7 +215,7 @@ module ST_controller(
         STRSP:
           begin
             rdest_addr = Rd1;  /**/
-            dmem_addr = data_in[15:0];  /**/
+            dmem_addr = {data_in[13:0], 2'b00};  /**/
             LR_sel = 1'b0;
             mem_force = 1'b0;
             dmem_wr = 1'b1;  /**/
@@ -243,7 +244,7 @@ module ST_controller(
           SP_cur  <= DEFAULT_SP;
           pos_cur <= IDLE_POS;
         end
-      else
+      else if (ST_Wen == 1'b1)
         begin
           SP_cur  <= SP_nxt;
           pos_cur <= pos_nxt;

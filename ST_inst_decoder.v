@@ -32,21 +32,21 @@ module ST_inst_decoder(
   always @(*)
     begin
       case (inst_in[15:11])
-        INST_ADDS:
+        `INST_ADDS:
           begin
             op_sel = ADDS;
             mem_inst = 1'b0;
             store = 1'b0;
           end
 
-        INST_LDRSP:
+        `INST_LDRSP:
           begin
             op_sel = LDRSP;
             mem_inst = 1'b1;
             store = 1'b0;
           end
 
-        INST_STRSP:
+        `INST_STRSP:
           begin
             op_sel = STRSP;
             mem_inst = 1'b1;
@@ -56,14 +56,14 @@ module ST_inst_decoder(
         default:
           begin
             case (inst_in[15:9])
-              INST_PUSH:
+              `INST_PUSH:
                 begin
                   op_sel = PUSH;
                   mem_inst = 1'b1;
                   store = 1'b1;
                 end
 
-              INST_POP:
+              `INST_POP:
                 begin
                  op_sel = POP;
                  mem_inst = 1'b1;
@@ -73,14 +73,14 @@ module ST_inst_decoder(
               default:
                 begin
                   case (inst_in[15:7])
-                    INST_ADDSP:
+                    `INST_ADDSP:
                       begin
                         op_sel = ADDSP;
                         mem_inst = 1'b0;
                         store = 1'b0;
                       end
 
-                    INST_SUBSP:
+                    `INST_SUBSP:
                       begin
                         op_sel = SUBSP;
                         mem_inst = 1'b0;
@@ -89,7 +89,7 @@ module ST_inst_decoder(
 
                     default:
                       begin
-                        if (inst_in[15:3] == INST_MOVSP)
+                        if (inst_in[15:3] == `INST_MOVSP)
                           begin
                             op_sel = MOVSP;
                             mem_inst = 1'b0;
@@ -110,6 +110,6 @@ module ST_inst_decoder(
     end
 
     /* whether this instruction stack-related? */
-    assign st_inst = (op_sel == NOP) : 1'b0 ? 1'b1;
+    assign st_inst = (op_sel == NOP) ? 1'b0 : 1'b1;
 
 endmodule

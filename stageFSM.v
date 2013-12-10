@@ -8,14 +8,15 @@ module stageFSM (
   output reg IR_Wen,
   output reg PC_Wen,
   output reg PSR_Wen,
-  output reg RF_Wen
+  output reg RF_Wen,
+  output reg ST_Wen
 );
 
   reg [1:0] curr_stage;
   reg [1:0] next_stage;
 
-  localparam IF  = 2'b00,
-  localparam EX  = 2'b01,
+  localparam IF  = 2'b00;
+  localparam EX  = 2'b01;
   localparam MEM = 2'b10;
 
   always @(posedge clk or negedge resetn)
@@ -72,6 +73,7 @@ module stageFSM (
             PC_Wen      = 1'b0;
             PSR_Wen     = 1'b0;
             RF_Wen      = 1'b0;
+            ST_Wen      = 1'b0;
           end
 
         EX :
@@ -83,6 +85,7 @@ module stageFSM (
                 PC_Wen      = 1'b0;
                 PSR_Wen     = 1'b0;
                 RF_Wen      = 1'b0;
+                ST_Wen      = 1'b0;
               end
             else
               begin
@@ -91,6 +94,7 @@ module stageFSM (
                 PC_Wen      = 1'b1;
                 PSR_Wen     = 1'b1;
                 RF_Wen      = 1'b1;
+                ST_Wen      = 1'b1;
               end
           end
 
@@ -101,6 +105,7 @@ module stageFSM (
             PC_Wen      = (mem_force == 1'b1) ? 1'b0 : 1'b1;
             PSR_Wen     = 1'b0;
             RF_Wen      = 1'b1;
+            ST_Wen      = 1'b1;
           end
 
         default :
@@ -110,6 +115,7 @@ module stageFSM (
             PC_Wen      = 1'b0;
             PSR_Wen     = 1'b0;
             RF_Wen      = 1'b0;
+            ST_Wen      = 1'b0;
           end
       endcase
   end
