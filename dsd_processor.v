@@ -1,13 +1,13 @@
 module dsd_processor (
-  input         clk, 
-  input         resetn, 
-  input  [31:0] dmem_data_in, 
-  input  [15:0] imem_data, 
-  
-  output [15:0] dmem_addr, 
+  input         clk,
+  input         resetn,
+  input  [31:0] dmem_data_in,
+  input  [15:0] imem_data,
+
+  output [15:0] dmem_addr,
   output [31:0] dmem_data_out,
-  output        dmem_wr, 
-  output [15:0] imem_addr 
+  output        dmem_wr,
+  output [15:0] imem_addr
 );
 
   wire [15:0] inst;
@@ -59,7 +59,7 @@ module dsd_processor (
   wire        PC_wr_st;
   wire        RF_wr_st,
   wire        st_inst;
-  
+
   IR u_IR (
     .clk           (clk             ),
     .resetn        (resetn          ),
@@ -79,7 +79,7 @@ module dsd_processor (
     .Rs3           (Rs3             ),
     .RL            (RL              )
   );
-  
+
   EX_top u_EX_top (
     .clk           (clk             ),
     .resetn        (resetn          ),
@@ -108,7 +108,7 @@ module dsd_processor (
     .store         (store           ),
     .WR            (WR_out          )
   );
-  
+
   RF #(32) u_RF (
     .clk           (clk             ),
     .resetn        (resetn          ),
@@ -123,7 +123,7 @@ module dsd_processor (
     .srcA          (srcA            ),
     .srcB          (srcB            )
   );
-  
+
   pc_gen u_pc_gen (
     .clk           (clk             ),
     .resetn        (resetn          ),
@@ -137,7 +137,7 @@ module dsd_processor (
     .LR            (LR              ),
     .PC            (imem_addr       )
   );
-  
+
   EXtoMEM_reg u_EXtoMEM_reg (
     .clk           (clk             ),
     .resetn        (resetn          ),
@@ -174,25 +174,26 @@ module dsd_processor (
     .RF_wr(RF_wr_st),
     .st_inst(st_inst)
   );
-  
+
   stageFSM u_stageFSM (
     .clk           (clk             ),
     .resetn        (resetn          ),
     .mem_inst      (mem_inst        ),
     .mem_force     (mem_force_st    ),
-    
+
     .EXtoMEM_Wen   (EXtoMEM_Wen     ),
     .IR_Wen        (IR_Wen          ),
     .PC_Wen        (PC_Wen          ),
     .PSR_Wen       (PSR_Wen         ),
     .RF_Wen        (RF_Wen          )
   );
-  
-  assign in_mem_stage  = (mem_inst == 1'b1 && EXtoMEM_Wen == 1'b0)? 1'b1 : 1'b0;
-  assign WR_in         = (in_mem_stage)? ~dmem_wr : WR_out;  // ~dmem_wr => load-instruction
-  assign RF_in         = (in_mem_stage)? dmem_data_in : EX_data;
-  assign addr_dest     = (in_mem_stage)? addr_dest_in_mem : addr_dest_in_ex;
-  assign dmem_data_out = MEM_data;
+
+  assign in_mem_stage  = (mem_inst == 1'b1 && EXtoMEM_Wen == 1'b0 || mem_force_st)? 1'b1 : 1'b0;
+  assign WR_in         = (in_mem_stage)? ((st_inst == 1'b0) ? ~dmem_wr : RF_wr_st) :
+                                         ((st_inst == 1'b0) ? : WR_out : RF_wr_st);  // ~dmem_wr => load-instruction
+  assign RF_in         = (in_mem_stage)? dmem_data_in : ((st_inst == 1'b0) ? EX_data : dout_st);
+  assign addr_dest     = (in_mem_stage)? ((st_inst == 1'b0) ? addr_dest_in_mem : rdest_addr_st) :
+                                         ((st_inst == 1'b0) ? addr_dest_in_ex : rdest_addr_st);
+  assign dmem_data_out = (st_inst == 1'b0) ? MEM_data : dmem_data_st;
 
 endmodule
-

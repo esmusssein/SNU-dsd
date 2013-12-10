@@ -61,7 +61,7 @@ module ST_controller(
             PC_wr = 1'b0;
             RF_wr = 1'b0;
           end
-        
+
         PUSH:
           begin
             if (pos_cur == IDLE_POS)
@@ -155,7 +155,7 @@ module ST_controller(
                   end
               end
           end
-        
+
         ADDSP:
           begin
             rdest_addr = 3'd0;
@@ -180,7 +180,7 @@ module ST_controller(
 
         MOVSP:
           begin
-            rdest_addr = Rd0;  /**/ 
+            rdest_addr = Rd0;  /**/
             dmem_addr = 16'd0;
             LR_sel = 1'b0;
             mem_force = 1'b0;
@@ -223,7 +223,7 @@ module ST_controller(
           end
 
         default:
-          begin  
+          begin
             rdest_addr = 3'd0;
             dmem_addr = 16'd0;
             LR_sel = 1'b0;
@@ -259,7 +259,7 @@ module ST_controller(
           SP_nxt  = SP_cur;
           pos_nxt = IDLE_POS;
         end
-      
+
       /* PUSH and POP */
       else if (op_sel == PUSH)
         begin
@@ -273,7 +273,7 @@ module ST_controller(
               SP_nxt = SP_cur;
               pos_nxt = IDLE_POS;
             end
-          else             
+          else
             begin
               SP_nxt = data_in[15:0];
               pos_nxt = pos_cur - 1;
@@ -297,7 +297,7 @@ module ST_controller(
               pos_nxt = pos_cur + 1;
             end
         end
-      
+
       /* changed SP */
       else
         begin
@@ -305,7 +305,7 @@ module ST_controller(
           pos_nxt = IDLE_POS;
         end
     end
-  
+
   /* assign stack pointer output */
   assign SP_out = SP_cur;
 

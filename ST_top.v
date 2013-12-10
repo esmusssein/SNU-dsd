@@ -5,24 +5,24 @@
  */
 module ST_top(
   input        clk,
-  input        resetn,         
-  input [6:0]  immed7,         
-  input [7:0]  immed8,         
+  input        resetn,
+  input [6:0]  immed7,
+  input [7:0]  immed8,
   input [15:0] LR,
-  input [8:0]  RL,             
-  input [2:0]  Rd0,            
-  input [2:0]  Rd1,            
+  input [8:0]  RL,
+  input [2:0]  Rd0,
+  input [2:0]  Rd1,
 
   output wire [15:0] dmem_addr,
   output wire [2:0]  rdest_addr
-  output wire [31:0] dout,     
-  output wire        store,    
-  output wire        mem_inst, 
+  output wire [31:0] dout,
+  output wire        store,
+  output wire        mem_inst,
   output wire        mem_force,
-  output wire        dmem_wr,  
-  output wire        PC_wr,    
-  output wire        RF_wr,    
-  output wire        st_inst   
+  output wire        dmem_wr,
+  output wire        PC_wr,
+  output wire        RF_wr,
+  output wire        st_inst
 );
 
   /* operation indicator via hot encoding */
@@ -34,20 +34,20 @@ module ST_top(
 
   /* decode instruction */
   ST_inst_decoder u_inst_decoder(
-    .inst_in(inst_in),  
+    .inst_in(inst_in),
 
-    .op_sel(op_sel),    
+    .op_sel(op_sel),
     .mem_inst(mem_inst),
-    .store(store),      
+    .store(store),
     .st_inst(st_inst)
   );
-  
+
   /* datapath */
   ST_datapath u_datapath(
-    .data_in(SP),     
-    .op_sel(op_sel),  
-    .immed7(immed7),  
-    .immed8(immed8),  
+    .data_in(SP),
+    .op_sel(op_sel),
+    .immed7(immed7),
+    .immed8(immed8),
 
     .data_out(dout_dp)
   );
@@ -55,20 +55,20 @@ module ST_top(
   /* controller */
   ST_controller u_controller(
     .clk(clk),
-    .resetn(resetn),   
-    .data_in(dout_dp), 
-    .op_sel(op_sel),   
-    .RL(RL),           
-    .Rd0(Rd0),         
-    .Rd1(Rd1),         
+    .resetn(resetn),
+    .data_in(dout_dp),
+    .op_sel(op_sel),
+    .RL(RL),
+    .Rd0(Rd0),
+    .Rd1(Rd1),
 
-    .rdest_addr(rdest_addr)
-    .dmem_addr(dmem_addr), 
-    .mem_force(mem_force), 
-    .dmem_wr(dmem_wr),     
+    .rdest_addr(rdest_addr),
+    .dmem_addr(dmem_addr),
+    .mem_force(mem_force),
+    .dmem_wr(dmem_wr),
     .PC_wr(PC_wr),
     .RF_wr(RF_wr),
-    .SP_out(SP)            
+    .SP_out(SP)
   );
 
   assign dout = dout_dp;

@@ -82,7 +82,7 @@ module stageFSM (
                 IR_Wen      = 1'b0;
                 PC_Wen      = 1'b0;
                 PSR_Wen     = 1'b0;
-                RF_Wen      = 1'b0;  //?
+                RF_Wen      = 1'b0;
               end
             else
               begin
@@ -98,7 +98,7 @@ module stageFSM (
           begin
             EXtoMEM_Wen = 1'b0;  
             IR_Wen      = 1'b0;
-            PC_Wen      = 1'b1;  //?
+            PC_Wen      = (mem_force == 1'b1) ? 1'b0 : 1'b1;
             PSR_Wen     = 1'b0;
             RF_Wen      = 1'b1;
           end
