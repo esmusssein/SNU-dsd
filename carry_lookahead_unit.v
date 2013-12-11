@@ -1,4 +1,3 @@
-/* TEST */
 module carry_lookahead_unit(
   cin,
   g,

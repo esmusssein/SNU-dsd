@@ -1,4 +1,3 @@
-/* TEST */
 module EX_datapath (
   input         clk, 
   input         resetn, 

@@ -1,4 +1,3 @@
-/* Verified: Yes. */
 module PSR (
     input            clk,
     input            resetn,

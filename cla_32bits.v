@@ -1,5 +1,3 @@
-/* TEST */
-/* TODO - delete display */
 module cla_32bits (
   input [31:0] a,
   input [31:0] b,

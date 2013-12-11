@@ -1,4 +1,3 @@
-/* TEST */
 module control_mux (
     input      [4:0]  immed5,
     input      [7:0]  immed8,
