@@ -38,6 +38,7 @@ module EX_top (
   wire        sh_dir;
   wire [2:0]  sh_func;
   wire        shift;
+  wire        mult;
   
   control_mux u_control_mux (
     .immed5        (immed5       ),
@@ -79,7 +80,8 @@ module EX_top (
     .rdest_sel     (rdest_sel    ),
     .rsrcA_sel     (rsrcA_sel    ),
     .rsrcB_sel     (rsrcB_sel    ),
-    .WR            (WR           )
+    .WR            (WR           ),
+    .mult          (mult         )
   );
   
   EX_datapath u_EX_datapath (
@@ -95,6 +97,7 @@ module EX_top (
     .srcA          (srcA         ),
     .srcB          (srcB         ),
     .PSR_Wen       (PSR_Wen      ),
+    .mult          (mult         ),
     
     .data_out      (data_out     ),
     .PSR_flags     (PSR_flags    )
