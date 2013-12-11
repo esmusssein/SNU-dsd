@@ -4,7 +4,7 @@ module stageFSM (
   input      mem_inst,
   input      mem_force,
 
-  output reg EXtoMEM_Wen,
+  output reg EXSTtoMEM_Wen,
   output reg IR_Wen,
   output reg PC_Wen,
   output reg PSR_Wen,
@@ -15,9 +15,9 @@ module stageFSM (
   reg [1:0] curr_stage;
   reg [1:0] next_stage;
 
-  localparam IF  = 2'b00;
-  localparam EX  = 2'b01;
-  localparam MEM = 2'b10;
+  localparam IF   = 2'b00;
+  localparam EXST = 2'b01;
+  localparam MEM  = 2'b10;
 
   always @(posedge clk or negedge resetn)
     begin
@@ -36,10 +36,10 @@ module stageFSM (
       case(curr_stage)
         IF:
           begin
-            next_stage = EX;
+            next_stage = EXST;
           end
 
-        EX:
+        EXST:
           begin
             if(mem_inst == 1'b1)
               begin
@@ -53,7 +53,7 @@ module stageFSM (
 
         MEM:
           begin
-            next_stage = (mem_force == 1'b1) ? MEM : IF;
+            next_stage = (mem_force == 1'b1) ? EXST : IF;
           end
 
         default:
@@ -68,7 +68,7 @@ module stageFSM (
       case(curr_stage)
         IF :
           begin
-            EXtoMEM_Wen = 1'b0;
+            EXSTtoMEM_Wen = 1'b0;
             IR_Wen      = 1'b1;
             PC_Wen      = 1'b0;
             PSR_Wen     = 1'b0;
@@ -76,11 +76,11 @@ module stageFSM (
             ST_Wen      = 1'b0;
           end
 
-        EX :
+        EXST :
           begin
             if (mem_inst == 1'b1)
               begin
-                EXtoMEM_Wen = 1'b1;
+                EXSTtoMEM_Wen = 1'b1;
                 IR_Wen      = 1'b0;
                 PC_Wen      = 1'b0;
                 PSR_Wen     = 1'b0;
@@ -89,7 +89,7 @@ module stageFSM (
               end
             else
               begin
-                EXtoMEM_Wen = 1'b0;
+                EXSTtoMEM_Wen = 1'b0;
                 IR_Wen      = 1'b0;
                 PC_Wen      = 1'b1;
                 PSR_Wen     = 1'b1;
@@ -100,7 +100,7 @@ module stageFSM (
 
         MEM :
           begin
-            EXtoMEM_Wen = 1'b0;  
+            EXSTtoMEM_Wen = 1'b0;  
             IR_Wen      = 1'b0;
             PC_Wen      = (mem_force == 1'b1) ? 1'b0 : 1'b1;
             PSR_Wen     = 1'b0;
@@ -110,7 +110,7 @@ module stageFSM (
 
         default :
           begin
-            EXtoMEM_Wen = 1'b0;
+            EXSTtoMEM_Wen = 1'b0;
             IR_Wen      = 1'b0;
             PC_Wen      = 1'b0;
             PSR_Wen     = 1'b0;

@@ -21,7 +21,7 @@ module ST_controller(
 
   /* default stack pointer */
   // TODO - find accurate value of it
-  localparam DEFAULT_SP = 16'b1111_1111_1111_1111;
+  localparam DEFAULT_SP = 16'b0000_0001_0000_0000;
 
   /* op codes */
   parameter NOP   = 8'b0000_0000;
@@ -89,8 +89,8 @@ module ST_controller(
               begin
                 if (RL[pos_cur] == 1'b1)
                   begin
-                    rdest_addr = pos_cur;
-                    dmem_addr = SP_cur;
+                    rdest_addr = pos_cur;  /**/
+                    dmem_addr = SP_cur - 4;    /**/
                     LR_sel = (pos_cur == 4'd8) ? 1'b1 : 1'b0;  /**/
                     mem_force = 1'b1;  /**/
                     dmem_wr = 1'b1;    /**/
@@ -204,7 +204,7 @@ module ST_controller(
         LDRSP:
           begin
             rdest_addr = Rd1;  /**/
-            dmem_addr = {data_in[13:0], 2'b00};  /**/
+            dmem_addr = data_in[15:0];  /**/
             LR_sel = 1'b0;
             mem_force = 1'b0;
             dmem_wr = 1'b0;
@@ -215,7 +215,7 @@ module ST_controller(
         STRSP:
           begin
             rdest_addr = Rd1;  /**/
-            dmem_addr = {data_in[13:0], 2'b00};  /**/
+            dmem_addr = data_in[15:0];  /**/
             LR_sel = 1'b0;
             mem_force = 1'b0;
             dmem_wr = 1'b1;  /**/
@@ -264,38 +264,58 @@ module ST_controller(
       /* PUSH and POP */
       else if (op_sel == PUSH)
         begin
+          /* header PUSH */
           if (pos_cur == IDLE_POS)
             begin
               SP_nxt = SP_cur;
               pos_nxt = 4'd8;
             end
+          /* tail PUSH */
           else if (pos_cur == FULL_POS)
             begin
               SP_nxt = SP_cur;
               pos_nxt = IDLE_POS;
             end
+          /* real PUSH */
           else
-            begin
-              SP_nxt = data_in[15:0];
-              pos_nxt = pos_cur - 1;
-            end
+            if (RL[pos_cur] == 1'b1)
+              begin
+                SP_nxt = data_in[15:0];
+                pos_nxt = pos_cur - 1;
+              end
+            else
+              begin
+                SP_nxt = SP_cur;
+                pos_nxt = pos_cur - 1;
+              end
         end
       else if (op_sel == POP)
         begin
+          /* header POP */
           if (pos_cur == IDLE_POS)
             begin
               SP_nxt = SP_cur;
               pos_nxt = 4'd0;
             end
-          else if (pos_nxt == EMPTY_POS)
+          /* tail POP */
+          else if (pos_cur == EMPTY_POS)
             begin
               SP_nxt = SP_cur;
               pos_nxt = IDLE_POS;
             end
+          /* real POP */
           else
             begin
-              SP_nxt = data_in[15:0];
-              pos_nxt = pos_cur + 1;
+              if (RL[pos_cur] == 1'b1)
+                begin
+                  SP_nxt = data_in[15:0];
+                  pos_nxt = pos_cur + 1;
+                end
+              else
+                begin
+                  SP_nxt = SP_cur;
+                  pos_nxt = pos_cur + 1;
+                end
             end
         end
 

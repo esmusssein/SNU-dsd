@@ -1,0 +1,16 @@
+/* intial stack = 0x100 = 256 */
+2001 MOVI #0x1, r0
+2102 MOVI #0x2, r1
+2204 MOVI #0x4, r2
+2308 MOVI #0x8, r3
+2410 MOVI #0x10, r4
+2520 MOVI #0x20, r5
+2640 MOVI #0x40, r6
+2780 MOVI #0x80, r7
+B5FF PUSH LR, r7, r6, ..., r0  /* dmem[63]=LR, dmem[62]=0x80, ..., dmem[55]=0x1, SP=0xdc */
+B009 ADDSP #0x9 /* SP= 0x100 */
+4668 MOVSP r0 /* r0=SP */
+A90F ADDS #0xf, r1 /* r1=0x13c */
+B089 SUBSP #0x9 /* SP=0xdc */
+9A07 LDRSP #0x7, r2 /* r2=dmem[62] */
+9302 STRSP #0x2, r3 /* dmem[57]=r3 */

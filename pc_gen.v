@@ -12,6 +12,13 @@
   output reg [15:0] PC
   );
 
+  localparam IDLE = 0;
+  localparam CHANGED = 1;
+  
+  /* if the pc changed, maintain pc at least 1 clock */
+  reg state_ff;
+  reg state_nxt;
+
   reg [15:0] nextPC;
   reg [15:0] nextLR;
 
@@ -21,37 +28,52 @@
         begin
           PC <= 16'h0000;
           LR <= 16'h0000;
+          state_ff <= 1'b0;
         end 
       else 
         begin
           PC <= nextPC;
           LR <= nextLR;
+          state_ff <= state_nxt;
         end
-  end
+    end
 
   /* compute next pc */
   always @(*)
-  begin
-    if (PC_Wen == 1'b1)
-      begin
-        if (br == 1'b1)
-          begin
-            nextPC = PC + (offset << 1) + 4;            
-          end
-        else if (PC_wr == 1'b1)
-          begin
-            nextPC = data_in;
-          end
-        else
-          begin
-            nextPC = PC + 2;
-          end
-      end
-    else
-      begin
-        nextPC = PC;
-      end
-  end
+    begin
+      if (PC_Wen == 1'b1 && state_ff == IDLE)
+        begin
+          if (br == 1'b1)
+            begin
+              nextPC = PC + (offset << 1) + 4;
+            end
+          else
+            begin
+              nextPC = PC + 2;
+            end
+        end
+      else if (PC_wr == 1'b1 && state_ff == IDLE)
+        begin
+          nextPC = data_in;
+        end
+      else
+        begin
+          nextPC = PC;
+        end
+    end
+
+  /* compute next state */
+  always @(*)
+    begin
+      if (PC_wr == 1'b1 && state_ff == IDLE)
+        begin
+          state_nxt = CHANGED;
+        end
+      else
+        begin
+          state_nxt = IDLE;
+        end
+    end
 
   /* compute next lr */
   always @(*)

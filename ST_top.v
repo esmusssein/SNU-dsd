@@ -18,6 +18,7 @@ module ST_top(
   output wire [15:0] dmem_addr,
   output wire [2:0]  rdest_addr,
   output wire [31:0] dout,
+  output wire        LR_sel,
   output wire        store,
   output wire        mem_inst,
   output wire        mem_force,
@@ -65,12 +66,13 @@ module ST_top(
     .RL(RL),
     .Rd0(Rd0),
     .Rd1(Rd1),
+    .LR(LR),
 
     .rdest_addr(rdest_addr),
     .dmem_addr(dmem_addr),
     .mem_force(mem_force),
     .dmem_wr(dmem_wr),
-    .LR_sel(),  /* TODO */
+    .LR_sel(LR_sel),
     .PC_wr(PC_wr),
     .RF_wr(RF_wr),
     .SP_out(SP)

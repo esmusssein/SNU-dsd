@@ -15,9 +15,9 @@ module top ();
     .dmem_data_in   (dmem_data_read          ),
     .imem_data      (imem_data               ), 
     
-    .dmem_addr_exst (dmem_addr               ),
+    .dmem_addr      (dmem_addr               ),
     .dmem_data_out  (dmem_data_write         ),
-    .dmem_wr_exst   (dmem_wr                 ), 
+    .dmem_wr        (dmem_wr                 ), 
     .imem_addr      (imem_addr               ) 
   );
   
