@@ -9,7 +9,7 @@ module imem (
   
   initial
     begin
-      $readmemh("imem_data_stack.txt", imem);
+      $readmemh("imem_data_mul_ret.txt", imem);
     end
   
   always@(posedge clk)

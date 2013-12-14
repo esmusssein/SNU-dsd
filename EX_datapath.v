@@ -1,4 +1,3 @@
-/* TEST */
 module EX_datapath (
   input         clk, 
   input         resetn, 
@@ -6,23 +5,26 @@ module EX_datapath (
   input  [4:0]  immed5, 
   input  [31:0] immed32, 
   input         immed_sel, 
-  input         shift, 
+  input         shift,
   input         sh_dir, 
   input  [2:0]  sh_func, 
   input  [31:0] srcA,
   input  [31:0] srcB, 
-  input         PSR_Wen, 
+  input         PSR_Wen,
+  input         mult, 
   
-  output [31:0] data_out,
-  output [3:0]  PSR_flags
+  output reg [31:0] data_out,
+  output     [3:0]  PSR_flags
 );
 
   /* inner wire */
   wire [31:0] selected_a;
   wire [3:0]  alu_flag;
   wire [3:0]  sh_flag;
+  wire [3:0]  mult_flag;
   wire [31:0] alu_data;
   wire [31:0] sh_data;
+  wire [31:0] mult_data;
   wire [4:0]  shamt;
   
   /* be aware of it selects a, not b */
@@ -47,6 +49,17 @@ module EX_datapath (
     .data_out        (sh_data   ),
     .flag_out        (sh_flag   )
   );
+
+  multiplier u_multiplier(
+    .a(selected_a),
+    .b(b),
+    .p(mult_data)
+  );
+  /* generate mult-flag */
+  assign mult_flag[3] = ~(|mult_data);
+  assign mult_flag[2] = mult_data[31];
+  assign mult_flag[1] = 1'b0;
+  assign mult_flag[0] = 1'b0;
   
   PSR u_PSR (
     .clk             (clk       ),
@@ -55,11 +68,28 @@ module EX_datapath (
     .alu_sel         (alu_sel   ),
     .shifter_flag_in (sh_flag   ),
     .shift           (shift     ),
+    .mult_flag_in    (mult_flag ),
+    .mult            (mult      ),
     .Wen             (PSR_Wen   ),
     
     .flag_out        (PSR_flags )
   );
   
-  assign data_out = (shift == 1'b1)? sh_data : alu_data;
+  /* select proper data_out */
+  always @(*)
+    begin
+      if (shift == 1'b1)
+        begin
+          data_out = sh_data;
+        end
+      else if (mult == 1'b1)
+        begin
+          data_out = mult_data;
+        end
+      else
+        begin
+          data_out = alu_data;
+        end
+    end
 
 endmodule

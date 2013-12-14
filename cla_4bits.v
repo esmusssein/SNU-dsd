@@ -1,4 +1,3 @@
-/* TEST */
 module cla_4bits(
   input [3:0] a,
   input [3:0] b,

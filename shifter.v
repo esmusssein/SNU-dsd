@@ -1,4 +1,3 @@
-/* TEST */
 module shifter(
   input [31:0] data_in,
   input        dir,

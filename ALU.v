@@ -1,4 +1,3 @@
-/* TEST */
 module ALU(
     input [31:0]  a,
     input [6:0]   alu_sel,
