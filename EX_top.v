@@ -25,7 +25,8 @@ module EX_top (
   output        mem_inst,
   output        store,
   output        WR,
-  output        PC_wr
+  output        PC_wr,
+  output        send
 );
 
   wire [31:0] ALU_immed32;
@@ -83,7 +84,8 @@ module EX_top (
     .rsrcB_sel     (rsrcB_sel    ),
     .WR            (WR           ),
     .mult          (mult         ),
-    .PC_wr         (PC_wr)
+    .PC_wr         (PC_wr),
+    .send          (send)
   );
   
   EX_datapath u_EX_datapath (

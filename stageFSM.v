@@ -3,6 +3,7 @@ module stageFSM (
   input      resetn,
   input      mem_inst,
   input      mem_force,
+  input      send_inst,
 
   output reg EXSTtoMEM_Wen,
   output reg IR_Wen,

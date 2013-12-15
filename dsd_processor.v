@@ -75,6 +75,9 @@ module dsd_processor (
   wire        EXSTtoMEM_Wen;
   wire [15:0] mem_addr_in_exst;
 
+  /* UART send instruction signal */
+  wire send_inst;
+
   IR u_IR (
     .clk           (clk             ),
     .resetn        (resetn          ),
@@ -152,7 +155,8 @@ module dsd_processor (
     .mem_inst      (mem_inst_ex),
     .store         (store_ex),
     .WR            (WR_out_ex),
-    .PC_wr         (PCLR)
+    .PC_wr         (PCLR),
+    .send          (send_inst)
   );
 
   ST_top u_ST_top(
@@ -201,6 +205,7 @@ module dsd_processor (
     .resetn        (resetn),
     .mem_inst      (mem_inst_exst),
     .mem_force     (mem_force_st),
+    .send_inst     (send_inst),
 
     .EXSTtoMEM_Wen (EXSTtoMEM_Wen),
     .IR_Wen        (IR_Wen),
