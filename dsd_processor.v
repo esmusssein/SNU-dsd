@@ -47,7 +47,8 @@ module dsd_processor (
   wire [15:0] LR;
   wire [31:0] LR_ext;
   wire        ST_Wen;
-  wire        PC_wr;
+  wire        PC_wr_mem;
+  wire        PCLR;
 
   /* wire for EXSTtoMEM_reg */
   wire [31:0] EXSTtoMEM_reg_din;
@@ -117,7 +118,8 @@ module dsd_processor (
     .data_in       (dmem_data_in[15:0]),
     .offset        (PC_immed16),
     .PC_Wen        (PC_Wen),
-    .PC_wr         (PC_wr),
+    .PC_wr         (PC_wr_mem),
+    .PCLR          (PCLR),
 
     .LR            (LR),
     .PC            (imem_addr)
@@ -149,7 +151,8 @@ module dsd_processor (
     .link          (link),
     .mem_inst      (mem_inst_ex),
     .store         (store_ex),
-    .WR            (WR_out_ex)
+    .WR            (WR_out_ex),
+    .PC_wr         (PCLR)
   );
 
   ST_top u_ST_top(
@@ -190,7 +193,7 @@ module dsd_processor (
     .rdest_addr_out(addr_dest_in_mem),
     .data_out(MEM_data),
     .store_out(dmem_wr),
-    .PC_wr_out(PC_wr)
+    .PC_wr_out(PC_wr_mem)
   );
 
   stageFSM u_stageFSM (
@@ -221,7 +224,7 @@ module dsd_processor (
 
   /* select mem or exst */
   assign in_mem_stage  = (mem_inst_exst == 1'b1 && EXSTtoMEM_Wen == 1'b0) ? 1'b1 : 1'b0;
-  assign WR_in         = (in_mem_stage == 1'b1) ? (~dmem_wr & RF_wr_st) : WR_out_exst;  // ~dmem_wr => load-instruction
+  assign WR_in         = (in_mem_stage == 1'b1) ? (~dmem_wr & (st_inst == 1'b1 ? RF_wr_st : 1'b1)) : WR_out_exst;  // ~dmem_wr => load-instruction
   assign RF_in         = (in_mem_stage == 1'b1) ? dmem_data_in : EXST_data;
   assign addr_dest     = (in_mem_stage == 1'b1) ? addr_dest_in_mem : addr_dest_in_exst;
   assign dmem_data_out = MEM_data;

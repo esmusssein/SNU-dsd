@@ -7,6 +7,7 @@
   input      [15:0] offset,
   input             PC_Wen,
   input             PC_wr,
+  input             PCLR,     /* if set, nextPC = LR */
 
   output reg [15:0] LR,
   output reg [15:0] PC
@@ -24,12 +25,18 @@
 
   always @(posedge clk or negedge resetn)
     begin
-      if(resetn == 1'b0) 
+      if (resetn == 1'b0) 
         begin
           PC <= 16'h0000;
           LR <= 16'h0000;
           state_ff <= 1'b0;
-        end 
+        end
+      else if (PCLR == 1'b1)
+        begin
+          PC <= LR;
+          LR <= nextLR;
+          state_ff <= state_nxt;
+        end
       else 
         begin
           PC <= nextPC;

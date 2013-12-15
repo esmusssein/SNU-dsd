@@ -1,50 +1,54 @@
 /*
- * UART_transmitter
- * 
- * Verification required.
- * Codes by the textbook.
- * Question: what set_TE for?
+ * UART transmitter module
  */
 module UART_transmitter(
   input       clk,
   input       resetn,
   input       TxC,       /* transmitter clock signal */
-  input       load_TDR,  /* parallel load TDR signal */
-  input [7:0] data_bus,
+  input       load,      /* parallel load TDR signal */
+  input [7:0] din,
 
   output reg  TE,        /* TDR empty flag */
-  output wire TxD        /* TSDR output */
+  output reg  TxD        /* TSDR output */
 );
 
-  /* the frame size excluding the stop bit */
-  parameter M = 10;
+  /* the sending bit size excluding stop of start bit */
+  parameter M = 8;
+  parameter N = 3;
 
   /* FSM states */
   localparam IDLE =  1'b0;
   localparam SHIFT = 1'b1;
 
-  /* inner regs */
-  reg [7:0]   TDR;     /* transmitter data register */
-  reg [M-1:0] TSDR;    /* transmitter shift data register */
-  reg [3:0]   bitcnt;  /* bit counter */
+  /* transmitter data register */
+  reg [M-1:0] TDR;
+  /* transmitter shift data register */
+  reg [M-1:0] TSDR;
+  /* bit counter */
+  reg [N:0] bitcnt;
+  /* state register */
   reg state_ff;
   reg state_nxt;
+  /* TDSR empty flag control signal */
   reg set_TE;
-
-  /* load TDR when load_TDR is activated */
+  
+  /* load TDR when load is activated */
   always @(posedge clk or negedge resetn)
     begin
       if (resetn == 1'b0)
         begin
-          TDR <= 8'd0;
+          TDR <= {M{1'b0}};
         end
-      else if (load_TDR == 1'b1)
+      else
         begin
-          TDR <= data_bus;
+          if (load == 1'b1)
+            begin
+              TDR <= din;
+            end
         end
     end
 
-  /* update TDR empty flag */
+  /* update TE */
   always @(posedge clk or negedge resetn)
     begin
       if (resetn == 1'b0)
@@ -53,17 +57,14 @@ module UART_transmitter(
         end
       else
         begin
-          TE <= (set_TE & ~TE) | (~load_TDR & TE);
+          TE <= (set_TE & ~TE) | (~load & TE);  /* ISSUE */
         end
     end
- 
-  /* 
-   * Load TSDR from TDR and perform data transmission.
-   */
-  /* step 1: initialize and update state registers */
+
+  /* update state */
   always @(posedge TxC or negedge resetn)
     begin
-      if (resetn == 1'b0)
+      if (resetn == 1'b1)
         begin
           state_ff <= IDLE;
         end
@@ -72,73 +73,104 @@ module UART_transmitter(
           state_ff <= state_nxt;
         end
     end
-  /* step 2: compute next state */
+
+  /* compute next state */
   always @(*)
     begin
       case (state_ff)
         IDLE:
           begin
-            if (TE == 1'b1)
+            if (TE == 1'b0)
               begin
-                state_nxt = IDLE;
+                state_nxt = SHIFT;
               end
             else
               begin
-                state_nxt = SHIFT;
+                state_nxt = IDLE;
               end
           end
 
         SHIFT:
           begin
-            if (bitcnt != M-1)  /* bitcnt < M-1 */
-              begin
-                state_nxt = SHIFT;
-              end
-            else
+            if (bitcnt != M)
               begin
                 state_nxt = IDLE;
               end
+            else
+              begin
+                state_nxt = SHIFT;
+              end
+          end
+
+        default:
+          begin
+            state_nxt = state_ff;
           end
       endcase
     end
-  /* step 3: execute RTL operations */
+
+  /* update bitcnt, set_TE, TSDR */
   always @(posedge TxC or negedge resetn)
     begin
       if (resetn == 1'b0)
         begin
-          TSDR <= {M{1'b1}};
-          bitcnt <= 3'd0;
           set_TE <= 1'b0;
+          bitcnt <= {{N{1'b0}}, 1'b0};
+          TSDR   <= {M{1'b0}};
         end
       else
         begin
-          case (state_ff)
-            IDLE:
-              begin
-                if (TE == 1'b1)
-                  begin
-                    TSDR <= {1'b1, TSDR[M-1:1]};  /* send '1' */
-                    set_TE <= 1'b0;
-                  end
-                else
-                  begin
-                    TSDR <= {^TDR, TDR, 1'b0};  /* {paritybit, TDR, 0} */
-                    set_TE <= 1'b1;
-                    bitcnt <= 3'd0;
-                  end
-              end
-
-            SHIFT:
-              begin
-                TSDR <= {1'b1, TSDR[M-1:1]};
-                set_TE <= 1'b0;
-                bitcnt <= bitcnt + 1;
-              end
-          endcase
+          if (state_ff == IDLE)
+            begin
+              if (TE == 1'b0)
+                begin
+                  TSDR   <= TDR;
+                  bitcnt <= {{N{1'b0}}, 1'b0};
+                  set_TE <= 1'b0;    /* ISSUE */
+                end
+            end
+          else if (state_ff == SHIFT)
+            begin
+              if (bitcnt != M)
+                begin
+                  set_TE <= 1'b0;
+                end
+              else
+                begin
+                  set_TE <= 1'b1;
+                end
+              bitcnt <= bitcnt + 1;
+              TSDR   <= TDR;
+            end
         end
     end
 
-  /* If it has no data to be sent, send '1' continuously. */
-  assign TxD = TSDR[0] & (state_ff == SHIFT) | (state_ff == IDLE);
+  /* compute TxD */
+  always @(*)
+    begin
+      case (state_ff)
+        IDLE:
+          begin
+            if (TE == 1'b0)  /* send start bit */
+              begin
+                TxD = 1'b0;
+              end
+            else             /* send stop bit */
+              begin
+                TxD = 1'b1;
+              end
+          end
+
+        SHIFT:
+          begin
+            TxD = TSDR[0];
+          end
+
+        default:
+          begin
+            TxD = 1'b1;
+          end
+      endcase
+    end
 
 endmodule

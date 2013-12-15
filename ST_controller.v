@@ -21,7 +21,7 @@ module ST_controller(
 
   /* default stack pointer */
   // TODO - find accurate value of it
-  localparam DEFAULT_SP = 16'b0000_0001_0000_0000;
+  localparam DEFAULT_SP = 16'b1000_0000_0000_0000;
 
   /* op codes */
   parameter NOP   = 8'b0000_0000;

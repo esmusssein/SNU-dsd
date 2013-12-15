@@ -16,7 +16,8 @@ module inst_decoder (
   output reg [1:0]  rsrcA_sel,
   output reg [1:0]  rsrcB_sel,
   output reg        WR,
-  output reg        mult
+  output reg        mult,
+  output reg        PC_wr
 );
 
   /*opcodes*/
@@ -46,6 +47,7 @@ module inst_decoder (
   parameter BL   = 5'b11111;
   parameter BAL  = 5'b11100;
   parameter MUL  = 10'b0100001101;
+  parameter RET  = 16'b0100011101110000;
   
   /*ALU operations*/
   `define ALU_ADD 7'b1000000
@@ -99,6 +101,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                   else
                     begin 
@@ -117,6 +120,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                 end
               `NE :
@@ -138,6 +142,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                   else 
                     begin
@@ -156,6 +161,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                 end
               `CS :
@@ -177,6 +183,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                   else 
                     begin
@@ -195,6 +202,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                 end
               `CC :
@@ -216,6 +224,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                   else 
                     begin
@@ -234,6 +243,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                 end
               `MI :
@@ -255,6 +265,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                   else 
                     begin
@@ -273,6 +284,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                 end
               `PL :
@@ -294,6 +306,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                   else 
                     begin
@@ -312,6 +325,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                 end
               `VS:
@@ -333,6 +347,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                   else 
                     begin
@@ -351,6 +366,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                 end
               `VC:
@@ -372,6 +388,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                   else 
                     begin
@@ -390,6 +407,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                 end
               `HI:
@@ -411,6 +429,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                   else 
                     begin
@@ -429,6 +448,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                 end
               `LS:
@@ -450,6 +470,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                   else 
                     begin
@@ -468,6 +489,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                 end
               `GE:
@@ -489,6 +511,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                   else 
                     begin
@@ -507,6 +530,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                 end
               `LT:
@@ -528,6 +552,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                   else 
                     begin
@@ -546,6 +571,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                 end
               `GT:
@@ -567,6 +593,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                   else 
                     begin
@@ -585,6 +612,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                 end
               `LE:
@@ -606,6 +634,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                   else 
                     begin
@@ -624,6 +653,7 @@ module inst_decoder (
                       WR = 1'b0;
                       pc_offset_sel = 1'b0;
                       mult = 1'b0;
+                      PC_wr = 1'b0;
                     end
                 end
               `AL:
@@ -643,6 +673,7 @@ module inst_decoder (
                   WR = 1'b0;
                   pc_offset_sel = 1'b0;
                   mult = 1'b0;
+                  PC_wr = 1'b0;
                 end
               default:
                 begin
@@ -661,6 +692,7 @@ module inst_decoder (
                   WR = 1'b0;
                   pc_offset_sel = 1'b0;
                   mult = 1'b0;
+                  PC_wr = 1'b0;
                 end
             endcase
           end
@@ -684,6 +716,7 @@ module inst_decoder (
                   WR = 1'b1;
                   pc_offset_sel = 1'b0;
                   mult = 1'b0;
+                  PC_wr = 1'b0;
                 end
               SUBI :
                 begin
@@ -702,6 +735,7 @@ module inst_decoder (
                   WR = 1'b1;
                   pc_offset_sel = 1'b0;
                   mult = 1'b0;
+                  PC_wr = 1'b0;
                 end
               CMPI :
                 begin
@@ -720,6 +754,7 @@ module inst_decoder (
                   WR = 1'b0;
                   pc_offset_sel = 1'b0;
                   mult = 1'b0;
+                  PC_wr = 1'b0;
                 end
               MOVI :
                 begin
@@ -738,6 +773,7 @@ module inst_decoder (
                   WR = 1'b1;
                   pc_offset_sel = 1'b0;
                   mult = 1'b0;
+                  PC_wr = 1'b0;
                 end
               LSLI :
                 begin
@@ -756,6 +792,7 @@ module inst_decoder (
                   WR = 1'b1;
                   pc_offset_sel = 1'b0;
                   mult = 1'b0;
+                  PC_wr = 1'b0;
                 end
               LSRI :
                 begin
@@ -774,6 +811,7 @@ module inst_decoder (
                   WR = 1'b1;
                   pc_offset_sel = 1'b0;
                   mult = 1'b0;
+                  PC_wr = 1'b0;
                 end
               ASRI :
                 begin
@@ -792,6 +830,7 @@ module inst_decoder (
                   WR = 1'b1;
                   pc_offset_sel = 1'b0;
                   mult = 1'b0;
+                  PC_wr = 1'b0;
                 end
               LDRI :
                 begin
@@ -810,6 +849,7 @@ module inst_decoder (
                   WR = 1'b1;
                   pc_offset_sel = 1'b0;
                   mult = 1'b0;
+                  PC_wr = 1'b0;
                 end
               STRI :
                 begin
@@ -828,6 +868,7 @@ module inst_decoder (
                   WR = 1'b0;
                   pc_offset_sel = 1'b0;
                   mult = 1'b0;
+                  PC_wr = 1'b0;
                 end
               BL :
                 begin
@@ -846,6 +887,7 @@ module inst_decoder (
                   WR = 1'b0;
                   pc_offset_sel = 1'b1;
                   mult = 1'b0;
+                  PC_wr = 1'b0;
                 end
               BAL :
                 begin
@@ -864,6 +906,7 @@ module inst_decoder (
                   WR = 1'b0;
                   pc_offset_sel = 1'b1;
                   mult = 1'b0;
+                  PC_wr = 1'b0;
                 end
               default :
                 begin
@@ -885,6 +928,7 @@ module inst_decoder (
                         WR = 1'b1;
                         pc_offset_sel = 1'b0;
                         mult = 1'b0;
+                        PC_wr = 1'b0;
                       end
                     SUB :
                       begin
@@ -903,6 +947,7 @@ module inst_decoder (
                         WR = 1'b1;
                         pc_offset_sel = 1'b0;
                         mult = 1'b0;
+                        PC_wr = 1'b0;
                       end
                     LDR :
                       begin
@@ -913,7 +958,7 @@ module inst_decoder (
                         sh_func = 3'b100;
                         sh_dir = 1'b0;
                         shift = 1'b0;
-                        mem_inst = 1'b0;
+                        mem_inst = 1'b1;
                         store = 1'b0;
                         rsrcA_sel = 2'b10;
                         rsrcB_sel = 2'b01;
@@ -921,6 +966,7 @@ module inst_decoder (
                         WR = 1'b1;
                         pc_offset_sel = 1'b0;
                         mult = 1'b0;
+                        PC_wr = 1'b0;
                       end
                     STR :
                       begin
@@ -939,6 +985,7 @@ module inst_decoder (
                         WR = 1'b0;
                         pc_offset_sel = 1'b0;
                         mult = 1'b0;
+                        PC_wr = 1'b0;
                       end
                     default :            
                       begin
@@ -960,6 +1007,7 @@ module inst_decoder (
                               WR = 1'b0;
                               pc_offset_sel = 1'b0;
                               mult = 1'b0;
+                              PC_wr = 1'b0;
                             end
                           AND :
                             begin
@@ -978,6 +1026,7 @@ module inst_decoder (
                               WR = 1'b1;
                               pc_offset_sel = 1'b0;
                               mult = 1'b0;
+                              PC_wr = 1'b0;
                             end
                           ORR :
                             begin
@@ -996,6 +1045,7 @@ module inst_decoder (
                               WR = 1'b1;
                               pc_offset_sel = 1'b0;
                               mult = 1'b0;
+                              PC_wr = 1'b0;
                             end
                           EOR :
                             begin
@@ -1014,6 +1064,7 @@ module inst_decoder (
                               WR = 1'b1;
                               pc_offset_sel = 1'b0;
                               mult = 1'b0;
+                              PC_wr = 1'b0;
                             end
                           MOV :
                             begin
@@ -1032,6 +1083,7 @@ module inst_decoder (
                               WR = 1'b1;
                               pc_offset_sel = 1'b0;
                               mult = 1'b0;
+                              PC_wr = 1'b0;
                             end
                           LSL :
                             begin
@@ -1050,6 +1102,7 @@ module inst_decoder (
                               WR = 1'b1;
                               pc_offset_sel = 1'b0;
                               mult = 1'b0;
+                              PC_wr = 1'b0;
                             end
                           LSR :
                             begin
@@ -1068,6 +1121,7 @@ module inst_decoder (
                               WR = 1'b1;
                               pc_offset_sel = 1'b0;
                               mult = 1'b0;
+                              PC_wr = 1'b0;
                             end
                           ASR :
                             begin
@@ -1086,6 +1140,7 @@ module inst_decoder (
                               WR = 1'b1;
                               pc_offset_sel = 1'b0;
                               mult = 1'b0;
+                              PC_wr = 1'b0;
                             end
                           ROR :
                             begin
@@ -1104,6 +1159,7 @@ module inst_decoder (
                               WR = 1'b1;
                               pc_offset_sel = 1'b0;
                               mult = 1'b0;
+                              PC_wr = 1'b0;
                             end
                           MUL:
                             begin
@@ -1122,25 +1178,47 @@ module inst_decoder (
                               WR = 1'b1;
                               pc_offset_sel = 1'b0;
                               mult = 1'b1;
+                              PC_wr = 1'b0;
                             end
                           default :
-                            begin
-                              alu_sel = `ALU_NOP;
-                              immed_sel = 1'b0;
-                              br = 1'b0;
-                              link = 1'b0;
-                              sh_func = 3'b100;
-                              sh_dir = 1'b0;
-                              shift = 1'b0;
-                              mem_inst = 1'b0;
-                              store = 1'b0;
-                              rsrcA_sel = 2'b00;
-                              rsrcB_sel = 2'b00;
-                              rdest_sel = 1'b0;
-                              WR = 1'b0;
-                              pc_offset_sel = 1'b0;
-                              mult = 1'b0;
-                            end
+                            if (inst_in == RET)
+                              begin
+                                alu_sel = `ALU_NOP;
+                                immed_sel = 1'b0;
+                                br = 1'b0;
+                                link = 1'b0;
+                                sh_func = 3'b100;
+                                sh_dir = 1'b0;
+                                shift = 1'b0;
+                                mem_inst = 1'b0;
+                                store = 1'b0;
+                                rsrcA_sel = 2'b00;
+                                rsrcB_sel = 2'b00;
+                                rdest_sel = 1'b0;
+                                WR = 1'b0;
+                                pc_offset_sel = 1'b0;
+                                mult = 1'b0;
+                                PC_wr = 1'b1;  /**/
+                              end
+                            else
+                              begin
+                                alu_sel = `ALU_NOP;
+                                immed_sel = 1'b0;
+                                br = 1'b0;
+                                link = 1'b0;
+                                sh_func = 3'b100;
+                                sh_dir = 1'b0;
+                                shift = 1'b0;
+                                mem_inst = 1'b0;
+                                store = 1'b0;
+                                rsrcA_sel = 2'b00;
+                                rsrcB_sel = 2'b00;
+                                rdest_sel = 1'b0;
+                                WR = 1'b0;
+                                pc_offset_sel = 1'b0;
+                                mult = 1'b0;
+                                PC_wr = 1'b0;
+                              end
                           endcase
                       end
                   endcase

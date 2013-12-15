@@ -52,7 +52,7 @@ module EX_datapath (
 
   multiplier u_multiplier(
     .a(selected_a),
-    .b(b),
+    .b(srcB),
     .p(mult_data)
   );
   /* generate mult-flag */

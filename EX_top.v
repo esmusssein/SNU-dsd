@@ -15,16 +15,17 @@ module EX_top (
   input  [31:0] srcA,
   input  [31:0] srcB,
 
-  output [2:0]  addr_srcA, 
-  output [2:0]  addr_srcB, 
-  output [2:0]  addr_dest, 
-  output [15:0] PC_immed16, 
-  output        br, 
-  output [31:0] data_out, 
-  output        link, 
+  output [2:0]  addr_srcA,
+  output [2:0]  addr_srcB,
+  output [2:0]  addr_dest,
+  output [15:0] PC_immed16,
+  output        br,
+  output [31:0] data_out,
+  output        link,
   output        mem_inst,
-  output        store, 
-  output        WR
+  output        store,
+  output        WR,
+  output        PC_wr
 );
 
   wire [31:0] ALU_immed32;
@@ -81,7 +82,8 @@ module EX_top (
     .rsrcA_sel     (rsrcA_sel    ),
     .rsrcB_sel     (rsrcB_sel    ),
     .WR            (WR           ),
-    .mult          (mult         )
+    .mult          (mult         ),
+    .PC_wr         (PC_wr)
   );
   
   EX_datapath u_EX_datapath (

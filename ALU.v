@@ -104,7 +104,7 @@ module ALU(
 
   flag_decoder #(32) fdecoder(
     .sin(cla_sum),
-    .cin(cla_cout),
+    .cin(cla_cout),  /* issue */
 
     .fout(cla_fout)
   );
@@ -130,24 +130,24 @@ module ALU(
 
         AND:
           begin
-            flag_out[3] = cla_fout[3];
-            flag_out[2] = cla_fout[2];
+            flag_out[3] = &(~data_out);
+            flag_out[2] = data_out[31];
             flag_out[1] = 0;
             flag_out[0] = 0;
           end
 
         ORR:
           begin
-            flag_out[3] = cla_fout[3];
-            flag_out[2] = cla_fout[2];
+            flag_out[3] = &(~data_out);
+            flag_out[2] = data_out[31];
             flag_out[1] = 0;
             flag_out[0] = 0;
           end
 
         EOR:
           begin
-            flag_out[3] = cla_fout[3];
-            flag_out[2] = cla_fout[2];
+            flag_out[3] = &(~data_out);
+            flag_out[2] = data_out[31];
             flag_out[1] = 0;
             flag_out[0] = 0;
           end
@@ -190,7 +190,7 @@ module flag_decoder(
   // z_flag(fout[3]), n_flag(fout[2]), c_flag(fout[1]), v_flag(fout[0])
   always @(*)
     begin
-      fout[3] = ~(|sin);
+      fout[3] = !sin;
       fout[2] = sin[W-1];
       fout[1] = cin[W-1];
       fout[0] = cin[W-2] ^ cin[W-1];

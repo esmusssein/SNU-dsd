@@ -7,7 +7,13 @@ module dmem (
   output reg [31:0] dmem_data_out
 );
 
-  reg [31:0] dmem [255:0];
+  reg [31:0] dmem [33000:0];
+  
+  /* initialize data-memory */
+  initial
+    begin
+      $readmemh("dmem_data.txt", dmem);
+    end
   
   always @(posedge clk)
     begin
