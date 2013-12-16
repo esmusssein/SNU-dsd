@@ -3,11 +3,14 @@ module dsd_processor (
   input         resetn,
   input  [31:0] dmem_data_in,
   input  [15:0] imem_data,
+  input         UART_TE,
 
   output [15:0] dmem_addr,
   output [31:0] dmem_data_out,
   output        dmem_wr,
-  output [15:0] imem_addr
+  output [15:0] imem_addr,
+  output        UART_load,
+  output [7:0]  UART_din
 );
 
   wire [15:0] inst;
@@ -206,13 +209,15 @@ module dsd_processor (
     .mem_inst      (mem_inst_exst),
     .mem_force     (mem_force_st),
     .send_inst     (send_inst),
+    .UART_TE       (UART_TE),
 
     .EXSTtoMEM_Wen (EXSTtoMEM_Wen),
     .IR_Wen        (IR_Wen),
     .PC_Wen        (PC_Wen),
     .PSR_Wen       (PSR_Wen),
     .RF_Wen        (RF_Wen),
-    .ST_Wen        (ST_Wen)
+    .ST_Wen        (ST_Wen),
+    .UART_load     (UART_load)
   );
 
   /* for put LR instead of register */
@@ -233,5 +238,8 @@ module dsd_processor (
   assign RF_in         = (in_mem_stage == 1'b1) ? dmem_data_in : EXST_data;
   assign addr_dest     = (in_mem_stage == 1'b1) ? addr_dest_in_mem : addr_dest_in_exst;
   assign dmem_data_out = MEM_data;
+
+  /* UART data-in */
+  assign UART_din = dest[7:0];
 
 endmodule

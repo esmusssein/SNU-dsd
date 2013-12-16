@@ -19,7 +19,6 @@ module ST_top(
   output wire [2:0]  rdest_addr,
   output wire [31:0] dout,
   output wire        LR_sel,
-  output wire        store,
   output wire        mem_inst,
   output wire        mem_force,
   output wire        dmem_wr,
@@ -42,7 +41,7 @@ module ST_top(
 
     .op_sel(op_sel),
     .mem_inst(mem_inst),
-    .store(store),
+    .store(),
     .st_inst(st_inst)
   );
 

@@ -15,19 +15,19 @@ module UART_top(
   wire TxC;
 
   /* UART transmitter */
-  UART_transmitter(
+  UART_transmitter u_transmitter(
     .clk(clk),
     .resetn(resetn),
     .TxC(TxC),
     .load(UART_wr),
     .din(din),
 
-    .TE(TE).
+    .TE(TE),
     .TxD(TxD)
   );
 
   /* UART baud rate generator */
-  UART_baudrate_gen(
+  UART_baud_rate u_baudrate(
     .clk(clk),
     .resetn(resetn),
 
