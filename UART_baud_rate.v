@@ -27,7 +27,7 @@ module UART_baud_rate(
   /* compute next counter */
   always @(*)
     begin
-      if (cnt_ff == 8'b1101_1000)
+      if (cnt_ff == 8'b1101_1001)
         begin
           cnt_nxt = 8'd0;
         end
@@ -52,6 +52,6 @@ module UART_baud_rate(
     end
 
   /* assign toggle flag */
-  assign tg = (cnt_ff == 8'b1101_1000) ? 1'b1 : 1'b0;
+  assign tg = (cnt_ff == 8'b1101_1001) ? 1'b1 : 1'b0;
 
 endmodule

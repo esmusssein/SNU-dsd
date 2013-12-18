@@ -18,9 +18,6 @@ module stageFSM (
   /* stage register */
   reg [1:0] curr_stage;
   reg [1:0] next_stage;
-  
-  /* delay for UART */
-  reg delay_UART;
 
   /* state parameters */
   localparam IF     = 2'b00;   /* instruction fetching state */

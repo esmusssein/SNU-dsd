@@ -9,23 +9,19 @@ module UART_transmitter(
   input [7:0] din,
 
   output reg  TE,        /* TDR empty flag */
-  output reg  TxD        /* TSDR output */
+  output wire TxD        /* TSDR output */
 );
-
-  /* the sending bit size excluding stop of start bit */
-  parameter M = 8;
-  parameter N = 3;
 
   /* FSM states */
   localparam IDLE =  1'b0;
   localparam SHIFT = 1'b1;
 
   /* transmitter data register */
-  reg [M-1:0] TDR;
-  /* transmitter shift data register */
-  reg [M-1:0] TSDR;
+  reg [7:0] TDR;
+  /* transmitter shift data register include start bit */
+  reg [8:0] TSDR;
   /* bit counter */
-  reg [N:0] bitcnt;
+  reg [3:0] bitcnt;
   /* state register */
   reg state_ff;
   reg state_nxt;
@@ -37,7 +33,7 @@ module UART_transmitter(
     begin
       if (resetn == 1'b0)
         begin
-          TDR <= {M{1'b0}};
+          TDR <= 8'd0;
         end
       else
         begin
@@ -92,7 +88,7 @@ module UART_transmitter(
 
         SHIFT:
           begin
-            if (bitcnt != M)
+            if (bitcnt != 8)
               begin
                 state_nxt = IDLE;
               end
@@ -115,8 +111,8 @@ module UART_transmitter(
       if (resetn == 1'b0)
         begin
           set_TE <= 1'b0;
-          bitcnt <= {{N{1'b0}}, 1'b0};
-          TSDR   <= {M{1'b0}};
+          bitcnt <= 4'd0;
+          TSDR   <= 9'd0;
         end
       else
         begin
@@ -124,14 +120,14 @@ module UART_transmitter(
             begin
               if (TE == 1'b0)
                 begin
-                  TSDR   <= TDR;
-                  bitcnt <= {{N{1'b0}}, 1'b0};
-                  set_TE <= 1'b0;    /* ISSUE */
+                  TSDR   <= {TDR, 1'b0};        /* {payload, startbit} */
+                  bitcnt <= 4'd0;
+                  set_TE <= 1'b0;               /* ISSUE */
                 end
             end
           else if (state_ff == SHIFT)
             begin
-              if (bitcnt != M)
+              if (bitcnt != 4'd9)
                 begin
                   set_TE <= 1'b0;
                 end
@@ -140,37 +136,11 @@ module UART_transmitter(
                   set_TE <= 1'b1;
                 end
               bitcnt <= bitcnt + 1;
-              TSDR   <= TDR;
+              TSDR   <= {1'b1, TSDR[8:1]};
             end
         end
     end
 
-  /* compute TxD */
-  always @(*)
-    begin
-      case (state_ff)
-        IDLE:
-          begin
-            if (TE == 1'b0)  /* send start bit */
-              begin
-                TxD = 1'b0;
-              end
-            else             /* send stop bit */
-              begin
-                TxD = 1'b1;
-              end
-          end
-
-        SHIFT:
-          begin
-            TxD = TSDR[0];
-          end
-
-        default:
-          begin
-            TxD = 1'b1;
-          end
-      endcase
-    end
+  assign TxD = TSDR[0] & (state_ff == SHIFT) | (state_ff == IDLE);
 
 endmodule
