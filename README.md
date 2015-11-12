@@ -1,8 +1,5 @@
-dsd-processor
+2015 SNU Digital System Design
 =============
 
-TODO 
-Fix multiplier simulation error.
-Add RET inst and make it work.
-
-For 2013 digital system design.
+Term project for 2015 Fall SNU Digial System Design class.
+The system simulates RISC ARM architecture CPU on FPGA board. The code is synthesizable.
